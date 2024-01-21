@@ -9,4 +9,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface BookMapper {
     List<BookDto> mapBook(List<Book> book);
+
+    Book map(BookDto bookDto);
 }
