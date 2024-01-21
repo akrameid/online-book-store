@@ -16,14 +16,19 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
 
-    @GetMapping("")
+    @GetMapping("/books")
     public List<BookDto> getAllBooks() {
         return this.adminService.getAllBooks();
     }
 
-    @PostMapping()
+    @PostMapping("/books")
     ResponseEntity<String> addBook(@Valid @RequestBody final BookDto bookDto) {
         return new ResponseEntity<>(this.adminService.addBook(bookDto), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/books/{id}")
+    ResponseEntity<String> update(@PathVariable final Long id, @Valid @RequestBody final BookDto bookDto) {
+        return new ResponseEntity<>(this.adminService.update(id, bookDto), HttpStatus.OK);
     }
 
 }
