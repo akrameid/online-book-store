@@ -6,8 +6,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
 @Getter
@@ -23,13 +24,18 @@ public class Book {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotNull
     private String name;
+    @NotNull
     private String authorName;
+    @NotNull
     private BigDecimal price;
+    @NotNull
+    private Integer stock;
     @CreatedDate
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private Timestamp updatedAt;
 
 }

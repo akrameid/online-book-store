@@ -22,8 +22,8 @@ public class Database {
 
         return args -> {
 
-            final Book book1 = Book.builder().authorName("auth 1").name("book 1").price(BigDecimal.valueOf(1)).build();
-            final Book book2 = Book.builder().authorName("auth 2").name("book 2").price(BigDecimal.valueOf(2)).build();
+            final Book book1 = Book.builder().authorName("auth 1").stock(11).name("book 1").price(BigDecimal.valueOf(1)).build();
+            final Book book2 = Book.builder().authorName("auth 2").stock(11).name("book 2").price(BigDecimal.valueOf(2)).build();
             bookRepository.save(book1);
             bookRepository.save(book2);
         };

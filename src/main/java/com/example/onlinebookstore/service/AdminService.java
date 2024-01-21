@@ -20,7 +20,7 @@ public class AdminService {
 
     public List<BookDto> getAllBooks() {
         final List<Book> books = this.bookRepository.findAll();
-        return this.bookMapper.mapBook(books);
+        return this.bookMapper.mapToDto(books);
     }
 
     public String addBook(final BookDto bookDto) {
