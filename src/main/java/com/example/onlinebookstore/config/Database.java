@@ -25,8 +25,10 @@ public class Database {
 
         return args -> {
 
-            final Book book1 = this.bookUtil.createBook("book 1", "auth 1", 11, BigDecimal.valueOf(1), true);
-            final Book book2 = this.bookUtil.createBook("book 2", "auth 2", 22, BigDecimal.valueOf(2), true);
+            final Book book1 = this.bookUtil.createBook("book 1", "auth 1", 11,
+                    BigDecimal.valueOf(1), true, "Category 1");
+            final Book book2 = this.bookUtil.createBook("book 2", "auth 2", 22,
+                    BigDecimal.valueOf(2), true, "Category 2");
             bookRepository.save(book1);
             bookRepository.save(book2);
         };

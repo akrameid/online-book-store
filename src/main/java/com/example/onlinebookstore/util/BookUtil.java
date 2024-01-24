@@ -10,13 +10,15 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class BookUtil {
 
-    public Book createBook(final String name, final String authorName, final int stock, final BigDecimal price, final boolean isAvailable) {
+    public Book createBook(final String name, final String authorName, final int stock,
+                           final BigDecimal price, final boolean isAvailable, final String category) {
         return Book.builder()
                 .authorName(authorName)
                 .stock(stock)
                 .name(name)
                 .price(price)
                 .isAvailable(isAvailable)
+                .category(category)
                 .build();
     }
 }

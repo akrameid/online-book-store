@@ -37,4 +37,5 @@ public class Book {
     @LastModifiedDate
     private Timestamp updatedAt;
     private Boolean isAvailable;
+    private String category;
 }

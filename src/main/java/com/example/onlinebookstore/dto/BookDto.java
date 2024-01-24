@@ -23,4 +23,5 @@ public class BookDto {
     @JsonIgnore
     private LocalDateTime updatedAt;
     private Boolean isAvailable;
+    private String category;
 }

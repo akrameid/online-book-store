@@ -38,6 +38,7 @@ public class AdminService {
         }
     }
 
+    //TODO: add some validations
     public String update(final Long id, final BookDto bookDto) {
         final Optional<Book> optionalBook = this.bookRepository.findById(id);
         if (optionalBook.isPresent()) {
@@ -45,8 +46,9 @@ public class AdminService {
             updatedBook.setName(bookDto.getName());
             updatedBook.setAuthorName(bookDto.getAuthorName());
             updatedBook.setPrice(bookDto.getPrice());
-            updatedBook.setStock(bookDto.getStock());//check null
+            updatedBook.setStock(bookDto.getStock());//TODO: check null
             updatedBook.setIsAvailable(bookDto.getIsAvailable());
+            updatedBook.setCategory(bookDto.getCategory());
             this.bookRepository.save(updatedBook);
             return UPDATED_SUCCESSFULLY;
         } else {
