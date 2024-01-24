@@ -1,5 +1,6 @@
 package com.example.onlinebookstore.mapper;
 
+import com.example.onlinebookstore.dto.BookBriefDto;
 import com.example.onlinebookstore.dto.BookDto;
 import com.example.onlinebookstore.entity.Book;
 import org.mapstruct.Mapper;
@@ -34,4 +35,6 @@ public interface BookMapper {
         }
         return Timestamp.valueOf(localDateTime);
     }
+
+    List<BookBriefDto> mapToBriefDto(List<Book> books);
 }
