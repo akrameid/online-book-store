@@ -13,6 +13,7 @@ import java.util.List;
 public interface BookMapper {
 
     @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "isAvailable", source = "isAvailable")
     BookDto mapToDto(Book book);
 
     List<BookDto> mapToDto(List<Book> book);

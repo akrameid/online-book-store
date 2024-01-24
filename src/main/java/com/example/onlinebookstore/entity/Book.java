@@ -34,8 +34,7 @@ public class Book {
     private Integer stock;
     @CreatedDate
     private Timestamp createdAt;
-
     @LastModifiedDate
     private Timestamp updatedAt;
-
+    private Boolean isAvailable;
 }

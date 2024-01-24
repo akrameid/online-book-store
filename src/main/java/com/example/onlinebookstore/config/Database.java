@@ -2,6 +2,8 @@ package com.example.onlinebookstore.config;
 
 import com.example.onlinebookstore.entity.Book;
 import com.example.onlinebookstore.repository.BookRepository;
+import com.example.onlinebookstore.util.BookUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -11,10 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 @Configuration
+@RequiredArgsConstructor
 @Slf4j
 public class Database {
 
-//    private static final Logger log = LoggerFactory.getLogger(Database.class);
+    private final BookUtil bookUtil;
 
     @Bean
     @Transactional
@@ -22,8 +25,8 @@ public class Database {
 
         return args -> {
 
-            final Book book1 = Book.builder().authorName("auth 1").stock(11).name("book 1").price(BigDecimal.valueOf(1)).build();
-            final Book book2 = Book.builder().authorName("auth 2").stock(11).name("book 2").price(BigDecimal.valueOf(2)).build();
+            final Book book1 = this.bookUtil.createBook("book 1", "auth 1", 11, BigDecimal.valueOf(1), true);
+            final Book book2 = this.bookUtil.createBook("book 2", "auth 2", 22, BigDecimal.valueOf(2), true);
             bookRepository.save(book1);
             bookRepository.save(book2);
         };

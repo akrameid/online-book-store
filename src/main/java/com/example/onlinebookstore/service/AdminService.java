@@ -46,6 +46,7 @@ public class AdminService {
             updatedBook.setAuthorName(bookDto.getAuthorName());
             updatedBook.setPrice(bookDto.getPrice());
             updatedBook.setStock(bookDto.getStock());//check null
+            updatedBook.setIsAvailable(bookDto.getIsAvailable());
             this.bookRepository.save(updatedBook);
             return UPDATED_SUCCESSFULLY;
         } else {
