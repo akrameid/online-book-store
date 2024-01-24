@@ -1,11 +1,15 @@
 package com.example.onlinebookstore.service;
 
 import com.example.onlinebookstore.dto.BookDto;
+import com.example.onlinebookstore.dto.UserDto;
 import com.example.onlinebookstore.entity.Book;
+import com.example.onlinebookstore.entity.User;
 import com.example.onlinebookstore.exception.BookIdNotExistedException;
 import com.example.onlinebookstore.exception.BookNameExistedException;
 import com.example.onlinebookstore.mapper.BookMapper;
+import com.example.onlinebookstore.mapper.UserMapper;
 import com.example.onlinebookstore.repository.BookRepository;
+import com.example.onlinebookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,8 @@ import static com.example.onlinebookstore.constant.Constants.UPDATED_SUCCESSFULL
 public class AdminService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public List<BookDto> getAllBooks() {
         final List<Book> books = this.bookRepository.findAll();
@@ -54,5 +60,10 @@ public class AdminService {
         } else {
             throw new BookIdNotExistedException(id);
         }
+    }
+
+    public List<UserDto> getAllUsers() {
+        final List<User> users = this.userRepository.findAll();
+        return this.userMapper.mapToDto(users);
     }
 }

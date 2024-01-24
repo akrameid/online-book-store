@@ -1,6 +1,7 @@
 package com.example.onlinebookstore.controller;
 
 import com.example.onlinebookstore.dto.BookDto;
+import com.example.onlinebookstore.dto.UserDto;
 import com.example.onlinebookstore.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,12 @@ public class AdminController {
     @PutMapping("/books/{id}")
     ResponseEntity<String> update(@PathVariable final Long id, @Valid @RequestBody final BookDto bookDto) {
         return new ResponseEntity<>(this.adminService.update(id, bookDto), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/users")
+    public List<UserDto> getAllUsers() {
+        return this.adminService.getAllUsers();
     }
 
 }

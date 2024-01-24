@@ -30,4 +30,13 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     String bookNameNotContainException(final BookNameNotContainException ex) {
         return ex.getMessage();
     }
+
+
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserWithNameExistedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String userWithNameExistedException(final UserWithNameExistedException ex) {
+        return ex.getMessage();
+    }
+
 }

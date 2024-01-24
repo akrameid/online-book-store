@@ -7,18 +7,16 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-@Entity(name = "books")
+@Entity(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class)
-public class Book {
-
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
@@ -27,15 +25,9 @@ public class Book {
     @NotNull
     private String name;
     @NotNull
-    private String authorName;
-    @NotNull
-    private BigDecimal price;
-    @NotNull
-    private Integer stock;
+    private String password;
     @CreatedDate
     private Timestamp createdAt;
     @LastModifiedDate
     private Timestamp updatedAt;
-    private Boolean isAvailable;
-    private String category;
 }

@@ -2,10 +2,14 @@ package com.example.onlinebookstore.controller;
 
 import com.example.onlinebookstore.dto.BookBriefDto;
 import com.example.onlinebookstore.dto.BookDto;
+import com.example.onlinebookstore.dto.NewUserDto;
 import com.example.onlinebookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,5 +27,15 @@ public class UserController {
     @GetMapping("/books/{id}")
     public BookDto getBookDetailsById(@PathVariable("id") final Long id) {
         return this.userService.getBookDetailsById(id);
+    }
+
+    @PostMapping("")
+    ResponseEntity<String> register(@Valid @RequestBody final NewUserDto newUserDto) {
+        return new ResponseEntity<>(this.userService.registerUser(newUserDto), HttpStatus.CREATED);
+    }
+
+    @PutMapping("{userId}/books/borrow/{bookId}")
+    ResponseEntity<String> borrow(@PathVariable final Long userId, @PathVariable final Long bookId) {
+        return new ResponseEntity<>(this.userService.borrow(userId, bookId), HttpStatus.OK);
     }
 }
