@@ -34,8 +34,8 @@ public class UserController {
         return new ResponseEntity<>(this.userService.registerUser(newUserDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("{userId}/books/borrow/{bookId}")
-    ResponseEntity<String> borrow(@PathVariable final Long userId, @PathVariable final Long bookId) {
-        return new ResponseEntity<>(this.userService.borrow(userId, bookId), HttpStatus.OK);
+    @PutMapping("{userId}/books/{bookId}")
+    ResponseEntity<String> request(@PathVariable final Long userId, @PathVariable final Long bookId) {
+        return new ResponseEntity<>(this.userService.request(userId, bookId), HttpStatus.OK);
     }
 }

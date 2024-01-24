@@ -1,6 +1,7 @@
 package com.example.onlinebookstore.controller;
 
 import com.example.onlinebookstore.dto.BookDto;
+import com.example.onlinebookstore.dto.UserBookRequestDto;
 import com.example.onlinebookstore.dto.UserDto;
 import com.example.onlinebookstore.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -38,4 +39,8 @@ public class AdminController {
         return this.adminService.getAllUsers();
     }
 
+    @GetMapping("/requests")
+    public List<UserBookRequestDto> getAllUserBookRequests() {
+        return this.adminService.getAllUserBookRequests();
+    }
 }

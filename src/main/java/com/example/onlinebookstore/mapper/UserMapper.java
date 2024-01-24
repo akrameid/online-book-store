@@ -13,7 +13,7 @@ import java.util.List;
 public interface UserMapper {
 
     @Mapping(target = "createdAt", source = "createdAt")
-    UserDto mapToDto(User book);
+    UserDto mapToDto(User user);
 
     List<UserDto> mapToDto(List<User> user);
 
