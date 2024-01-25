@@ -39,5 +39,4 @@ public class Book {
     private Boolean isAvailable;
     private String category;
     private Integer numberOfDaysForBorrow;
-    private Integer browsingNumber = 0;
 }

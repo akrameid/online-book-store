@@ -5,6 +5,7 @@ import com.example.onlinebookstore.dto.BookDto;
 import com.example.onlinebookstore.entity.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface BookMapper {
 
+    BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "isAvailable", source = "isAvailable")
     BookDto mapToDto(Book book);
