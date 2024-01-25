@@ -11,7 +11,8 @@ import java.math.BigDecimal;
 public class BookUtil {
 
     public Book createBook(final String name, final String authorName, final int stock,
-                           final BigDecimal price, final boolean isAvailable, final String category) {
+                           final BigDecimal price, final boolean isAvailable, final String category,
+                           final Integer numberOfDaysForBorrow) {
         return Book.builder()
                 .authorName(authorName)
                 .stock(stock)
@@ -19,6 +20,7 @@ public class BookUtil {
                 .price(price)
                 .isAvailable(isAvailable)
                 .category(category)
+                .numberOfDaysForBorrow(numberOfDaysForBorrow)
                 .build();
     }
 }

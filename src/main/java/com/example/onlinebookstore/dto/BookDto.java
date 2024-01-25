@@ -24,4 +24,5 @@ public class BookDto {
     private LocalDateTime updatedAt;
     private Boolean isAvailable;
     private String category;
+    private Integer numberOfDaysForBorrow;
 }

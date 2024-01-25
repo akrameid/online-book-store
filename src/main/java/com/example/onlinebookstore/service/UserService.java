@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static com.example.onlinebookstore.constant.Constants.*;
@@ -71,7 +72,7 @@ public class UserService {
                 .status(UserBookRequestStatus.PENDING)
                 .build();
         this.userBookRequestRepository.save(userBookRequest);
-        return USER_REQUEST_RECEIVED;
+        return String.format(USER_REQUEST_RECEIVED, book.getName(), book.getNumberOfDaysForBorrow());
     }
 
     public String registerUser(final NewUserDto newUserDto) {
@@ -97,6 +98,10 @@ public class UserService {
         final Book book = request.getBook();
         book.setIsAvailable(true);
         this.bookRepository.save(book);
-        return USER_BOOK_RETURNED;
+        if (ChronoUnit.DAYS.between(request.getApprovedAt().toLocalDateTime(), LocalDateTime.now()) > request.getBook().getNumberOfDaysForBorrow()) {
+            return USER_BOOK_RETURNED_LATE;
+        } else {
+            return USER_BOOK_RETURNED;
+        }
     }
 }

@@ -38,4 +38,5 @@ public class Book {
     private Timestamp updatedAt;
     private Boolean isAvailable;
     private String category;
+    private Integer numberOfDaysForBorrow;
 }

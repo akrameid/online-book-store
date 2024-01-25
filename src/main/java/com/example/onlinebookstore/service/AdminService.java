@@ -9,7 +9,6 @@ import com.example.onlinebookstore.entity.UserBookRequestStatus;
 import com.example.onlinebookstore.exception.BookIdNotExistedException;
 import com.example.onlinebookstore.exception.BookNameExistedException;
 import com.example.onlinebookstore.mapper.BookMapper;
-import com.example.onlinebookstore.mapper.UserBookRequestMapper;
 import com.example.onlinebookstore.mapper.UserMapper;
 import com.example.onlinebookstore.repository.BookRepository;
 import com.example.onlinebookstore.repository.UserBookRequestRepository;
@@ -33,7 +32,6 @@ public class AdminService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserBookRequestRepository userBookRequestRepository;
-    private final UserBookRequestMapper userBookRequestMapper;
 
     public List<BookDto> getAllBooks() {
         final List<Book> books = this.bookRepository.findAll();
@@ -105,6 +103,6 @@ public class AdminService {
         final Book book = request.getBook();
         book.setIsAvailable(false);
         this.bookRepository.save(book);
-        return USER_REQUEST_APPROVED;
+        return String.format(USER_REQUEST_APPROVED, book.getName());
     }
 }
