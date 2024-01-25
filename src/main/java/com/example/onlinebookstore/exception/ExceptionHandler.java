@@ -68,5 +68,11 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return ex.getMessage();
     }
 
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserIdNotExistedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String userIdNotExistedException(final UserIdNotExistedException ex) {
+        return ex.getMessage();
+    }
 
 }

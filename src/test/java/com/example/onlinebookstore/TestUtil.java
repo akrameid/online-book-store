@@ -2,6 +2,8 @@ package com.example.onlinebookstore;
 
 import com.example.onlinebookstore.entity.Book;
 import com.example.onlinebookstore.entity.User;
+import com.example.onlinebookstore.entity.UserBookRequest;
+import com.example.onlinebookstore.entity.UserBookRequestStatus;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -49,5 +51,14 @@ public class TestUtil {
                 .category(category)
                 .numberOfDaysForBorrow(numberOfDaysForBorrow)
                 .build();
+    }
+
+    protected UserBookRequest getTestUserBookRequest(final Long bookId, final Long userId, final UserBookRequestStatus status) {
+        final UserBookRequest userBookRequest = UserBookRequest.builder()
+                .book(getTestBook(bookId))
+                .referredUser(getTestUser(userId))
+                .status(status)
+                .build();
+        return userBookRequest;
     }
 }

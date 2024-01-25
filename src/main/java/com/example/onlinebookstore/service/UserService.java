@@ -76,14 +76,14 @@ public class UserService {
     }
 
     public String requestBorrow(final Long userId, final Long bookId) {
-        final Book book = this.bookRepository.findById(bookId).orElseThrow();//TODO: handle exception
+        final Book book = this.bookRepository.findById(bookId).orElseThrow(() -> new BookIdNotExistedException(bookId));
         final var request = this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId);
         if (request.isPresent()) {
             if (request.get().getStatus().equals(UserBookRequestStatus.PENDING)) {
                 throw new BookRequestInProgressException(book.getName());
             }
         }
-        final User user = this.userRepository.findById(userId).orElseThrow();//TODO: handle exception
+        final User user = this.userRepository.findById(userId).orElseThrow(() -> new UserIdNotExistedException(userId)); //TODO: handle exception
         if (!book.getIsAvailable()) {
             throw new BookNotAvailableException(book.getName());
         }
