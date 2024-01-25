@@ -70,8 +70,8 @@ public class UserService {
         return userBrowsingHistory;
     }
 
-    public BookDto getBookDetailsById(final Long id) {
-        final Book book = this.bookRepository.findById(id).orElseThrow(() -> new BookIdNotExistedException(id));
+    public BookDto getBookDetailsById(final Long bookId) {
+        final Book book = this.bookRepository.findById(bookId).orElseThrow(() -> new BookIdNotExistedException(bookId));
         return this.bookMapper.mapToDto(book);
     }
 

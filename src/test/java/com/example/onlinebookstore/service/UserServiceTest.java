@@ -2,6 +2,7 @@ package com.example.onlinebookstore.service;
 
 import com.example.onlinebookstore.TestUtil;
 import com.example.onlinebookstore.entity.Book;
+import com.example.onlinebookstore.exception.BookIdNotExistedException;
 import com.example.onlinebookstore.mapper.BookMapper;
 import com.example.onlinebookstore.repository.BookRepository;
 import com.example.onlinebookstore.repository.UserBrowsingHistoryRepository;
@@ -15,7 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.onlinebookstore.constant.ErrorMessages.BOOK_ID_NOT_EXISTED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith({MockitoExtension.class})
@@ -42,7 +45,7 @@ public class UserServiceTest extends TestUtil {
         when(this.bookRepository.findAll()).thenReturn(books);
 
         when(this.bookMapper.mapToBriefDto(books)).then(
-                invocationOnMock -> BookMapper.INSTANCE.mapToDto(books)
+                invocationOnMock -> BookMapper.INSTANCE.mapToBriefDto(books)
         );
 
         final var result = this.userService.getAllBooks(category, name, userId);
@@ -114,11 +117,34 @@ public class UserServiceTest extends TestUtil {
         when(this.bookRepository.findAll()).thenReturn(books);
 
         when(this.bookMapper.mapToBriefDto(books)).then(
-                invocationOnMock -> BookMapper.INSTANCE.mapToDto(books)
+                invocationOnMock -> BookMapper.INSTANCE.mapToBriefDto(books)
         );
 
         final var result = this.userService.getAllBooks(category, name, userId);
         assertEquals(result.size(), books.size());
         verify(this.userBrowsingHistoryRepository, times(books.size())).save(any());
+    }
+
+    @Test
+    public void getBookDetailsById() {
+        final Long bookId = 1L;
+        final Book testBook = getTestBook(bookId);
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.ofNullable(testBook));
+
+        when(this.bookMapper.mapToDto(testBook)).then(
+                invocationOnMock -> BookMapper.INSTANCE.mapToDto(testBook)
+        );
+
+        final var result = this.userService.getBookDetailsById(bookId);
+        assertEquals(result.getId(), testBook.getId());
+    }
+
+    @Test
+    public void getBookDetailsById_bookNotFound() {
+        final Long bookId = 1L;
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.empty());
+        final BookIdNotExistedException exception = assertThrows(BookIdNotExistedException.class,
+                () -> this.userService.getBookDetailsById(bookId));
+        assertEquals(String.format(BOOK_ID_NOT_EXISTED, bookId), exception.getMessage());
     }
 }

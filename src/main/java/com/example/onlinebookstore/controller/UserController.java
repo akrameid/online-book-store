@@ -30,9 +30,9 @@ public class UserController {
         return this.userService.getSuggestedBooks(userId);
     }
 
-    @GetMapping("/books/{id}")
-    public BookDto getBookDetailsById(@PathVariable("id") final Long id) {
-        return this.userService.getBookDetailsById(id);
+    @GetMapping("/books/{bookId}")
+    public BookDto getBookDetailsById(@PathVariable("bookId") final Long bookId) {
+        return this.userService.getBookDetailsById(bookId);
     }
 
     @PostMapping("")
