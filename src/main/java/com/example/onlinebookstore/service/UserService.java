@@ -3,15 +3,13 @@ package com.example.onlinebookstore.service;
 import com.example.onlinebookstore.dto.BookBriefDto;
 import com.example.onlinebookstore.dto.BookDto;
 import com.example.onlinebookstore.dto.NewUserDto;
-import com.example.onlinebookstore.entity.Book;
-import com.example.onlinebookstore.entity.User;
-import com.example.onlinebookstore.entity.UserBookRequest;
-import com.example.onlinebookstore.entity.UserBookRequestStatus;
+import com.example.onlinebookstore.entity.*;
 import com.example.onlinebookstore.exception.*;
 import com.example.onlinebookstore.mapper.BookMapper;
 import com.example.onlinebookstore.mapper.UserMapper;
 import com.example.onlinebookstore.repository.BookRepository;
 import com.example.onlinebookstore.repository.UserBookRequestRepository;
+import com.example.onlinebookstore.repository.UserBrowsingHistoryRepository;
 import com.example.onlinebookstore.repository.UserRepository;
 import com.example.onlinebookstore.util.UserUtil;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +32,10 @@ public class UserService {
     private final UserBookRequestRepository userBookRequestRepository;
     private final UserMapper userMapper;
     private final UserUtil userUtil;
+    private final UserBrowsingHistoryRepository userBrowsingHistoryRepository;
 
-    public List<BookBriefDto> getAllBooks(final String category, final String name) {
+    public List<BookBriefDto> getAllBooks(final String category, final String name, final Long userId) {
+        final var user = this.userRepository.findById(userId).orElseThrow();//TODO: add exception
         final List<Book> books;
         if (StringUtils.hasText(category) && StringUtils.hasText(name)) {
             books = this.bookRepository.findByNameContainsAndCategory(name, category);
@@ -46,7 +46,28 @@ public class UserService {
         } else {
             books = this.bookRepository.findAll();
         }
+        adjustBrowsingNumber(books, user);
         return this.bookMapper.mapToBriefDto(books);
+    }
+
+    private void adjustBrowsingNumber(final List<Book> books, final User user) {
+        for (final Book book : books) {
+            final UserBrowsingHistory userBrowsingHistory = getUserBrowsingHistory(user, book);
+            userBrowsingHistory.setBrowsingHistory(userBrowsingHistory.getBrowsingHistory() + 1);
+            this.userBrowsingHistoryRepository.save(userBrowsingHistory);
+        }
+        this.bookRepository.saveAll(books);
+    }
+
+    private UserBrowsingHistory getUserBrowsingHistory(final User user, final Book book) {
+        final UserBrowsingHistory userBrowsingHistory;
+        final var userBrowsingHistoryOptional = this.userBrowsingHistoryRepository.findByReferredUser_IdAndBook_Id(user.getId(), book.getId());
+        userBrowsingHistory = userBrowsingHistoryOptional.orElseGet(() -> UserBrowsingHistory.builder()
+                .book(book)
+                .referredUser(user)
+                .browsingHistory(0L)
+                .build());
+        return userBrowsingHistory;
     }
 
     public BookDto getBookDetailsById(final Long id) {
@@ -103,5 +124,10 @@ public class UserService {
         } else {
             return USER_BOOK_RETURNED;
         }
+    }
+
+    public List<BookBriefDto> getSuggestedBooks(final Long userId) {
+        final List<Book> books = this.bookRepository.getSuggestedBooks(userId);
+        return this.bookMapper.mapToBriefDto(books);
     }
 }

@@ -12,7 +12,7 @@ public class BookUtil {
 
     public Book createBook(final String name, final String authorName, final int stock,
                            final BigDecimal price, final boolean isAvailable, final String category,
-                           final Integer numberOfDaysForBorrow) {
+                           final Integer numberOfDaysForBorrow, final Integer browsingNumber) {
         return Book.builder()
                 .authorName(authorName)
                 .stock(stock)
@@ -21,6 +21,7 @@ public class BookUtil {
                 .isAvailable(isAvailable)
                 .category(category)
                 .numberOfDaysForBorrow(numberOfDaysForBorrow)
+                .browsingNumber(browsingNumber)
                 .build();
     }
 }

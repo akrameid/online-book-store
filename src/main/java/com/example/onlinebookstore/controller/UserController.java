@@ -18,10 +18,16 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/books")
+    @GetMapping("{id}/books")
     public List<BookBriefDto> getAllBooks(@RequestParam(name = "category", required = false) final String category,
-                                          @RequestParam(name = "name", required = false) final String name) {
-        return this.userService.getAllBooks(category, name);
+                                          @RequestParam(name = "name", required = false) final String name,
+                                          @PathVariable("id") final Long userId) {
+        return this.userService.getAllBooks(category, name, userId);
+    }
+
+    @GetMapping("{id}/books/suggest")
+    public List<BookBriefDto> suggestBooks(@PathVariable("id") final Long userId) {
+        return this.userService.getSuggestedBooks(userId);
     }
 
     @GetMapping("/books/{id}")

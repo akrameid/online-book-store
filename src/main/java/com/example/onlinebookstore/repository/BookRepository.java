@@ -2,6 +2,7 @@ package com.example.onlinebookstore.repository;
 
 import com.example.onlinebookstore.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,4 +23,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findByNameAndCategory(String name, String category);
 
     boolean existsByName(String name);
+
+    @Query(nativeQuery = true, value = "select b.* from books b inner join USER_BROWSING_HISTORY ub on ub.book_id = b.id" +
+            " and ub.user_id = ?1 \n" +
+            " where ub.browsing_history > 0 order by ub.browsing_history desc ")
+    List<Book> getSuggestedBooks(Long userId);
 }

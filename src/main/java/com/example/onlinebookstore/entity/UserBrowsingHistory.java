@@ -2,32 +2,22 @@ package com.example.onlinebookstore.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
-@Entity(name = "user_book_requests")
+@Entity(name = "user_browsing_history")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @EntityListeners(AuditingEntityListener.class)
-public class UserBookRequest {
+public class UserBrowsingHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
-
-    @CreatedDate
-    private Timestamp requestedAt;
-    private Timestamp approvedAt;
-    private Timestamp returnedAt;
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private UserBookRequestStatus status;
 
     @ManyToOne()
     @JoinColumn(name = "user_id")
@@ -38,6 +28,6 @@ public class UserBookRequest {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    @Column(name = "totalPrice")
-    private Long totalPrice;
+    @Column(name = "browsingHistory")
+    private Long browsingHistory = 0L;
 }

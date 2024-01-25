@@ -28,11 +28,10 @@ public class Database {
     CommandLineRunner init(final BookRepository bookRepository, final UserRepository userRepository) {
 
         return args -> {
-
             final Book book1 = this.bookUtil.createBook("book 1", "auth 1", 11,
-                    BigDecimal.valueOf(1), true, "Category 1", 1);
+                    BigDecimal.valueOf(1), true, "Category 1", 1, 0);
             final Book book2 = this.bookUtil.createBook("book 2", "auth 2", 22,
-                    BigDecimal.valueOf(2), true, "Category 2", 2);
+                    BigDecimal.valueOf(2), true, "Category 2", 2, 0);
             bookRepository.save(book1);
             bookRepository.save(book2);
             final User user1 = this.userUtil.createUser("User 1", "pw1");

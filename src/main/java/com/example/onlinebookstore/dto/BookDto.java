@@ -25,4 +25,5 @@ public class BookDto {
     private Boolean isAvailable;
     private String category;
     private Integer numberOfDaysForBorrow;
+    private Integer browsingNumber;
 }
