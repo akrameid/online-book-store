@@ -81,13 +81,16 @@ public class AdminService {
         for (final var request : requests) {
             final UserDto userDto = this.userMapper.mapToDto(request.getReferredUser());
             final BookDto bookDto = this.bookMapper.mapToDto(request.getBook());
+            final LocalDateTime approvedAt = request.getApprovedAt() == null ? null : request.getApprovedAt().toLocalDateTime();
+            final LocalDateTime returnedAt = request.getReturnedAt() == null ? null : request.getReturnedAt().toLocalDateTime();
             final UserBookRequestDto userBookRequestDto = UserBookRequestDto.builder()
                     .userDto(userDto)
                     .bookDto(bookDto)
                     .status(request.getStatus())
                     .requestedAt(request.getRequestedAt().toLocalDateTime())
                     .id(request.getId())
-                    .approvedAt(request.getApprovedAt().toLocalDateTime())
+                    .approvedAt(approvedAt)
+                    .returnedAt(returnedAt)
                     .build();
             allUserBookRequestDtos.add(userBookRequestDto);
         }
@@ -99,6 +102,9 @@ public class AdminService {
         request.setStatus(UserBookRequestStatus.APPROVED);
         request.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
         this.userBookRequestRepository.save(request);
+        final Book book = request.getBook();
+        book.setIsAvailable(false);
+        this.bookRepository.save(book);
         return USER_REQUEST_APPROVED;
     }
 }

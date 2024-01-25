@@ -28,6 +28,7 @@ public class UserBookRequest {
     @CreatedDate
     private Timestamp requestedAt;
     private Timestamp approvedAt;
+    private Timestamp returnedAt;
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserBookRequestStatus status;

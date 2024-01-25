@@ -7,8 +7,7 @@ import com.example.onlinebookstore.entity.Book;
 import com.example.onlinebookstore.entity.User;
 import com.example.onlinebookstore.entity.UserBookRequest;
 import com.example.onlinebookstore.entity.UserBookRequestStatus;
-import com.example.onlinebookstore.exception.BookIdNotExistedException;
-import com.example.onlinebookstore.exception.UserWithNameExistedException;
+import com.example.onlinebookstore.exception.*;
 import com.example.onlinebookstore.mapper.BookMapper;
 import com.example.onlinebookstore.mapper.UserMapper;
 import com.example.onlinebookstore.repository.BookRepository;
@@ -19,10 +18,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.onlinebookstore.constant.Constants.USER_ADDED_SUCCESSFULLY;
-import static com.example.onlinebookstore.constant.Constants.USER_REQUEST_RECEIVED;
+import static com.example.onlinebookstore.constant.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -53,9 +53,18 @@ public class UserService {
         return this.bookMapper.mapToDto(book);
     }
 
-    public String request(final Long userId, final Long bookId) {
-        final User user = this.userRepository.findById(userId).orElseThrow();//TODO: handle exception
+    public String requestBorrow(final Long userId, final Long bookId) {
         final Book book = this.bookRepository.findById(bookId).orElseThrow();//TODO: handle exception
+        final var request = this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId);
+        if (request.isPresent()) {
+            if (request.get().getStatus().equals(UserBookRequestStatus.PENDING)) {
+                throw new BookRequestInProgressException(book.getName());
+            }
+        }
+        final User user = this.userRepository.findById(userId).orElseThrow();//TODO: handle exception
+        if (!book.getIsAvailable()) {
+            throw new BookNotAvailableException(book.getName());
+        }
         final UserBookRequest userBookRequest = UserBookRequest.builder()
                 .referredUser(user)
                 .book(book)
@@ -73,5 +82,21 @@ public class UserService {
             this.userRepository.save(this.userUtil.createUser(newUserDto.getName(), newUserDto.getPassword()));
             return USER_ADDED_SUCCESSFULLY;
         }
+    }
+
+    public String returnBook(final Long userId, final Long bookId) {
+        final var request = this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId).orElseThrow();//TODO: add exception
+        if (!request.getStatus().equals(UserBookRequestStatus.APPROVED)) {
+            throw new BookRequestNotFoundException(request.getBook().getName());
+        }
+        if (request.getReturnedAt() != null) {
+            throw new BookReturnedException(request.getBook().getName());
+        }
+        request.setReturnedAt(Timestamp.valueOf(LocalDateTime.now()));
+        this.userBookRequestRepository.save(request);
+        final Book book = request.getBook();
+        book.setIsAvailable(true);
+        this.bookRepository.save(book);
+        return USER_BOOK_RETURNED;
     }
 }
