@@ -5,6 +5,7 @@ import com.example.onlinebookstore.dto.UserBookRequestDto;
 import com.example.onlinebookstore.dto.UserDto;
 import com.example.onlinebookstore.entity.Book;
 import com.example.onlinebookstore.entity.User;
+import com.example.onlinebookstore.entity.UserBookRequestStatus;
 import com.example.onlinebookstore.exception.BookIdNotExistedException;
 import com.example.onlinebookstore.exception.BookNameExistedException;
 import com.example.onlinebookstore.mapper.BookMapper;
@@ -16,12 +17,13 @@ import com.example.onlinebookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.onlinebookstore.constant.Constants.ADDED_SUCCESSFULLY;
-import static com.example.onlinebookstore.constant.Constants.UPDATED_SUCCESSFULLY;
+import static com.example.onlinebookstore.constant.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -84,9 +86,19 @@ public class AdminService {
                     .bookDto(bookDto)
                     .status(request.getStatus())
                     .requestedAt(request.getRequestedAt().toLocalDateTime())
+                    .id(request.getId())
+                    .approvedAt(request.getApprovedAt().toLocalDateTime())
                     .build();
             allUserBookRequestDtos.add(userBookRequestDto);
         }
         return allUserBookRequestDtos;
+    }
+
+    public String approve(final Long id) {
+        final var request = this.userBookRequestRepository.findById(id).orElseThrow();//TODO : add exception
+        request.setStatus(UserBookRequestStatus.APPROVED);
+        request.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
+        this.userBookRequestRepository.save(request);
+        return USER_REQUEST_APPROVED;
     }
 }

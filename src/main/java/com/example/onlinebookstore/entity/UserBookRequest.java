@@ -27,6 +27,7 @@ public class UserBookRequest {
     private String password;
     @CreatedDate
     private Timestamp requestedAt;
+    private Timestamp approvedAt;
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserBookRequestStatus status;

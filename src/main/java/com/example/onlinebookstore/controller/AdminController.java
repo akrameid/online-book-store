@@ -43,4 +43,9 @@ public class AdminController {
     public List<UserBookRequestDto> getAllUserBookRequests() {
         return this.adminService.getAllUserBookRequests();
     }
+
+    @PutMapping("/requests/approve/{id}")
+    ResponseEntity<String> approve(@PathVariable final Long id) {
+        return new ResponseEntity<>(this.adminService.approve(id), HttpStatus.OK);
+    }
 }

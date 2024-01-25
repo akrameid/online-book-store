@@ -11,8 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class UserBookRequestDto {
+    private Long id;
     private UserDto userDto;
     private BookDto bookDto;
     private LocalDateTime requestedAt;
+    private LocalDateTime approvedAt;
     private UserBookRequestStatus status;
 }
