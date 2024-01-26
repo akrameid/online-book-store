@@ -32,6 +32,7 @@ public class Book {
     private BigDecimal price;
     @NotNull
     private Integer stock;
+    private Integer stockLevel;
     @CreatedDate
     private Timestamp createdAt;
     @LastModifiedDate

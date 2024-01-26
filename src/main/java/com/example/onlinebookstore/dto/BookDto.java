@@ -27,4 +27,5 @@ public class BookDto {
     @NotNull
     private String category;
     private Integer numberOfDaysForBorrow;
+    private Integer stockLevel;
 }
