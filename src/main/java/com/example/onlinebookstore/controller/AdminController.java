@@ -48,4 +48,9 @@ public class AdminController {
     ResponseEntity<String> approve(@PathVariable final Long id) {
         return new ResponseEntity<>(this.adminService.approve(id), HttpStatus.OK);
     }
+
+    @PutMapping("/requests/reject/{id}")
+    ResponseEntity<String> reject(@PathVariable final Long id) {
+        return new ResponseEntity<>(this.adminService.reject(id), HttpStatus.OK);
+    }
 }

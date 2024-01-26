@@ -77,11 +77,9 @@ public class UserService {
 
     public String requestBorrow(final Long userId, final Long bookId) {
         final Book book = this.bookRepository.findById(bookId).orElseThrow(() -> new BookIdNotExistedException(bookId));
-        final var request = this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId);
+        final var request = this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING);
         if (request.isPresent()) {
-            if (request.get().getStatus().equals(UserBookRequestStatus.PENDING)) {
-                throw new BookRequestInProgressException(book.getName());
-            }
+            throw new BookRequestInProgressException(book.getName());
         }
         final User user = this.userRepository.findById(userId).orElseThrow(() -> new UserIdNotExistedException(userId)); //TODO: handle exception
         if (!book.getIsAvailable()) {
@@ -109,7 +107,7 @@ public class UserService {
     public String returnBook(final Long userId, final Long bookId) {
         final var request =
                 this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId).
-                        orElseThrow(() -> new BookRequestNotCreatedException(bookId));
+                        orElseThrow(() -> new BookRequestNotCreatedException(bookId, userId));
         if (!request.getStatus().equals(UserBookRequestStatus.APPROVED)) {
             throw new BookRequestNotApprovedException(request.getBook().getName());
         }
@@ -121,7 +119,7 @@ public class UserService {
         final Book book = request.getBook();
         book.setIsAvailable(true);
         this.bookRepository.save(book);
-        if (ChronoUnit.DAYS.between(request.getApprovedAt().toLocalDateTime(), LocalDateTime.now()) > request.getBook().getNumberOfDaysForBorrow()) {
+        if (ChronoUnit.DAYS.between(request.getUpdatedAt().toLocalDateTime(), LocalDateTime.now()) > request.getBook().getNumberOfDaysForBorrow()) {
             return USER_BOOK_RETURNED_LATE;
         } else {
             return USER_BOOK_RETURNED;

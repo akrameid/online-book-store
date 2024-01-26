@@ -15,7 +15,7 @@ public class UserBookRequestDto {
     private UserDto userDto;
     private BookDto bookDto;
     private LocalDateTime requestedAt;
-    private LocalDateTime approvedAt;
+    private LocalDateTime updatedAt;
     private LocalDateTime returnedAt;
     private UserBookRequestStatus status;
 }

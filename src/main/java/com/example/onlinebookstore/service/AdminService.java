@@ -6,8 +6,7 @@ import com.example.onlinebookstore.dto.UserDto;
 import com.example.onlinebookstore.entity.Book;
 import com.example.onlinebookstore.entity.User;
 import com.example.onlinebookstore.entity.UserBookRequestStatus;
-import com.example.onlinebookstore.exception.BookIdNotExistedException;
-import com.example.onlinebookstore.exception.BookNameExistedException;
+import com.example.onlinebookstore.exception.*;
 import com.example.onlinebookstore.mapper.BookMapper;
 import com.example.onlinebookstore.mapper.UserMapper;
 import com.example.onlinebookstore.repository.BookRepository;
@@ -79,7 +78,7 @@ public class AdminService {
         for (final var request : requests) {
             final UserDto userDto = this.userMapper.mapToDto(request.getReferredUser());
             final BookDto bookDto = this.bookMapper.mapToDto(request.getBook());
-            final LocalDateTime approvedAt = request.getApprovedAt() == null ? null : request.getApprovedAt().toLocalDateTime();
+            final LocalDateTime updatedAt = request.getUpdatedAt() == null ? null : request.getUpdatedAt().toLocalDateTime();
             final LocalDateTime returnedAt = request.getReturnedAt() == null ? null : request.getReturnedAt().toLocalDateTime();
             final UserBookRequestDto userBookRequestDto = UserBookRequestDto.builder()
                     .userDto(userDto)
@@ -87,7 +86,7 @@ public class AdminService {
                     .status(request.getStatus())
                     .requestedAt(request.getRequestedAt().toLocalDateTime())
                     .id(request.getId())
-                    .approvedAt(approvedAt)
+                    .updatedAt(updatedAt)
                     .returnedAt(returnedAt)
                     .build();
             allUserBookRequestDtos.add(userBookRequestDto);
@@ -96,13 +95,31 @@ public class AdminService {
     }
 
     public String approve(final Long id) {
-        final var request = this.userBookRequestRepository.findById(id).orElseThrow();//TODO : add exception
+        final var request =
+                this.userBookRequestRepository.findById(id).
+                        orElseThrow(() -> new BookRequestNotCreatedException(id));
+        if (request.getStatus().equals(UserBookRequestStatus.APPROVED)) {
+            throw new BookRequestAlreadyApprovedException(id);
+        }
         request.setStatus(UserBookRequestStatus.APPROVED);
-        request.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
+        request.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         this.userBookRequestRepository.save(request);
         final Book book = request.getBook();
         book.setIsAvailable(false);
         this.bookRepository.save(book);
-        return String.format(USER_REQUEST_APPROVED, book.getName());
+        return String.format(USER_REQUEST_REJECTED, book.getName());
+    }
+
+    public String reject(final Long id) {
+        final var request =
+                this.userBookRequestRepository.findById(id).
+                        orElseThrow(() -> new BookRequestNotCreatedException(id));
+        if (request.getStatus().equals(UserBookRequestStatus.REJECTED)) {
+            throw new BookRequestAlreadyRejectedException(id);
+        }
+        request.setStatus(UserBookRequestStatus.REJECTED);
+        request.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        this.userBookRequestRepository.save(request);
+        return String.format(USER_REQUEST_REJECTED, request.getBook().getName());
     }
 }

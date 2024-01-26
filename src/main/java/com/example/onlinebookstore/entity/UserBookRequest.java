@@ -20,11 +20,6 @@ public class UserBookRequest {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
-
-    @CreatedDate
-    private Timestamp requestedAt;
-    private Timestamp approvedAt;
-    private Timestamp returnedAt;
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserBookRequestStatus status;
@@ -33,11 +28,16 @@ public class UserBookRequest {
     @JoinColumn(name = "user_id")
     private User referredUser;
 
-    @NotNull
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
     @Column(name = "totalPrice")
     private Long totalPrice;
+
+
+    @CreatedDate
+    private Timestamp requestedAt;
+    private Timestamp updatedAt;
+    private Timestamp returnedAt;
 }

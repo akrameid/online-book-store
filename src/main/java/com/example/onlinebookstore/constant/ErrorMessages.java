@@ -10,5 +10,8 @@ public class ErrorMessages {
     public static final String BOOK_NAME_NOT_CONTAIN = "There is no book name contain \"%s\"";
     public static final String USER_ALREADY_REGISTERED = "User name \"%s\" is already registered";
     public static final String BOOK_REQUEST_NOT_APPROVED = "Book name \"%s\" is not approved for this user";
-    public static final String BOOK_REQUEST_NOT_CREATED = "Book id %d is not requested to borrow for this user";
+    public static final String BOOK_REQUEST_NOT_CREATED = "Book request id %d is not requested to borrow for this user";
+    public static final String BOOK_REQUEST_ALREADY_REJECTED = "Book request id %d is already rejected for this user";
+    public static final String BOOK_REQUEST_ALREADY_APPROVED = "Book request id %d is already approved for this user";
+    public static final String BOOK_REQUEST_WITH_BOOK_USER_NOT_CREATED = "Book request for book id %d  and user id %d is not requested to borrow for this user";
 }

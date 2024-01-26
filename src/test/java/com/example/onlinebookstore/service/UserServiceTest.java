@@ -171,7 +171,7 @@ public class UserServiceTest extends TestUtil {
         final Book testBook = getTestBook(bookId);
         testBook.setIsAvailable(true);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
-        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.empty());
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.empty());
         final User testUser = getTestUser(userId);
         when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(testUser));
 
@@ -205,7 +205,7 @@ public class UserServiceTest extends TestUtil {
         final Book testBook = getTestBook(bookId);
         testBook.setIsAvailable(true);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
-        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(getTestUserBookRequest(bookId, userId, UserBookRequestStatus.PENDING)));
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.of(getTestUserBookRequest(bookId, userId, UserBookRequestStatus.PENDING)));
 
         final BookRequestInProgressException exception = assertThrows(BookRequestInProgressException.class,
                 () -> this.userService.requestBorrow(userId, bookId));
@@ -219,7 +219,7 @@ public class UserServiceTest extends TestUtil {
         final Book testBook = getTestBook(bookId);
         testBook.setIsAvailable(true);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
-        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.empty());
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.empty());
         final User testUser = getTestUser(userId);
         when(this.userRepository.findById(userId)).thenReturn(Optional.empty());
 
@@ -235,7 +235,7 @@ public class UserServiceTest extends TestUtil {
         final Book testBook = getTestBook(bookId);
         testBook.setIsAvailable(false);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
-        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.empty());
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.empty());
         final User testUser = getTestUser(userId);
         when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(testUser));
 
@@ -273,7 +273,7 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 2L;
         final Long bookId = 2L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
-        testUserBookRequest.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
+        testUserBookRequest.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
         final var result = this.userService.returnBook(userId, bookId);
         verify(this.userBookRequestRepository, times(1)).save(any());
@@ -291,7 +291,7 @@ public class UserServiceTest extends TestUtil {
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.empty());
         final BookRequestNotCreatedException exception = assertThrows(BookRequestNotCreatedException.class,
                 () -> this.userService.returnBook(userId, bookId));
-        assertEquals(String.format(BOOK_REQUEST_NOT_CREATED, bookId), exception.getMessage());
+        assertEquals(String.format(BOOK_REQUEST_WITH_BOOK_USER_NOT_CREATED, bookId, userId), exception.getMessage());
     }
 
     @Test
@@ -299,7 +299,7 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 2L;
         final Long bookId = 2L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.PENDING);
-        testUserBookRequest.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
+        testUserBookRequest.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
         final BookRequestNotApprovedException exception = assertThrows(BookRequestNotApprovedException.class,
                 () -> this.userService.returnBook(userId, bookId));
@@ -311,7 +311,7 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 2L;
         final Long bookId = 2L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
-        testUserBookRequest.setApprovedAt(Timestamp.valueOf(LocalDateTime.now().minusDays(10)));
+        testUserBookRequest.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now().minusDays(10)));
         testUserBookRequest.getBook().setNumberOfDaysForBorrow(2);
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
         final var result = this.userService.returnBook(userId, bookId);
@@ -328,7 +328,7 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 2L;
         final Long bookId = 2L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
-        testUserBookRequest.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
+        testUserBookRequest.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         testUserBookRequest.setReturnedAt(Timestamp.valueOf(LocalDateTime.now()));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
         final BookReturnedException exception = assertThrows(BookReturnedException.class,

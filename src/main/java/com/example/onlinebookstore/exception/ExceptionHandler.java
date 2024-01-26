@@ -82,4 +82,19 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return ex.getMessage();
     }
 
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookRequestAlreadyRejectedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookRequestAlreadyRejectedException(final BookRequestAlreadyRejectedException ex) {
+        return ex.getMessage();
+    }
+
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookRequestAlreadyApprovedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookRequestAlreadyApprovedException(final BookRequestAlreadyApprovedException ex) {
+        return ex.getMessage();
+    }
+
+
 }
