@@ -262,7 +262,7 @@ public class UserServiceTest extends TestUtil {
         final String name = "n2";
         final String password = "p2";
         final NewUserDto testNewUserDto = getTestNewUserDto(name, password);
-        when(this.userRepository.findByNameAndPassword(name, password)).thenReturn(Optional.of(getTestUser(name, password)));
+        when(this.userRepository.findByNameAndPassword(name, password)).thenReturn(Optional.of(getTestUser()));
         final UserAlreadyRegisteredException exception = assertThrows(UserAlreadyRegisteredException.class,
                 () -> this.userService.registerUser(testNewUserDto));
         assertEquals(String.format(USER_ALREADY_REGISTERED, name), exception.getMessage());
