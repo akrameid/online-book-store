@@ -3,6 +3,8 @@ package com.example.onlinebookstore.service;
 import com.example.onlinebookstore.TestUtil;
 import com.example.onlinebookstore.dto.BookDto;
 import com.example.onlinebookstore.entity.Book;
+import com.example.onlinebookstore.entity.User;
+import com.example.onlinebookstore.entity.UserBookRequest;
 import com.example.onlinebookstore.exception.BookIdNotExistedException;
 import com.example.onlinebookstore.exception.BookNameExistedException;
 import com.example.onlinebookstore.exception.BookNameExistedInOtherBookException;
@@ -102,5 +104,35 @@ public class AdminServiceTest extends TestUtil {
         final BookIdNotExistedException exception = assertThrows(BookIdNotExistedException.class,
                 () -> this.adminService.update(bookId, bookDto));
         assertEquals(String.format(BOOK_ID_NOT_EXISTED, bookId), exception.getMessage());
+    }
+
+    @Test
+    public void getAllUsers() {
+        final List<User> testUsers = getTestUsers();
+        when(this.userRepository.findAll()).thenReturn(testUsers);
+        when(this.userMapper.mapToDto(testUsers)).then(
+                invocationOnMock -> UserMapper.INSTANCE.mapToDto(testUsers));
+        final var result = this.adminService.getAllUsers();
+        assertEquals(testUsers.size(), result.size());
+    }
+
+    @Test
+    public void getAllUserBookRequests() {
+        final List<UserBookRequest> testUserBookRequests = getTestUserBookRequests();
+        when(this.userBookRequestRepository.findAll()).thenReturn(testUserBookRequests);
+        when(this.userMapper.mapToDto(any(User.class))).then(
+                invocationOnMock ->
+                {
+                    final User user = invocationOnMock.getArgument(0);
+                    return UserMapper.INSTANCE.mapToDto(user);
+                });
+        when(this.bookMapper.mapToDto(any(Book.class))).then(
+                invocationOnMock ->
+                {
+                    final Book book = invocationOnMock.getArgument(0);
+                    return BookMapper.INSTANCE.mapToDto(book);
+                });
+        final var result = this.adminService.getAllUserBookRequests();
+        assertEquals(testUserBookRequests.size(), result.size());
     }
 }

@@ -104,7 +104,7 @@ public class AdminService {
         final Book book = request.getBook();
         book.setIsAvailable(false);
         this.bookRepository.save(book);
-        return String.format(USER_REQUEST_REJECTED, book.getName());
+        return String.format(USER_REQUEST_APPROVED, book.getName());
     }
 
     public String reject(final Long id) {

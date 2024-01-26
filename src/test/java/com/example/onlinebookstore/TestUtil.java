@@ -8,21 +8,31 @@ import com.example.onlinebookstore.entity.UserBookRequest;
 import com.example.onlinebookstore.entity.UserBookRequestStatus;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestUtil {
-    protected User getTestUser(final String name, final String password) {
+    protected User getTestUser() {
         return User.builder()
-                .name(name)
-                .password(password)
+                .name("name")
+                .password("pw")
                 .build();
+    }
+
+    protected List<User> getTestUsers() {
+        final List<User> users = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            users.add(getTestUser((long) i));
+        }
+        return users;
     }
 
     protected User getTestUser(final Long id) {
         return User.builder()
-                .name("test user")
-                .password("password")
+                .name("test user" + id)
+                .password("password" + id)
                 .id(id)
                 .build();
     }
@@ -41,7 +51,7 @@ public class TestUtil {
 
     protected Book getTestBook(final Long bookId) {
         return getTestBook(bookId, "test book " + bookId, "test author " + bookId, Math.toIntExact(bookId), BigDecimal.valueOf(bookId),
-                true, "cat" + bookId, Math.toIntExact(bookId));
+                "cat" + bookId, Math.toIntExact(bookId));
     }
 
     protected BookDto getTestBookDto(final Long id) {
@@ -70,7 +80,7 @@ public class TestUtil {
     }
 
     protected Book getTestBook(final Long id, final String name, final String authorName, final int stock,
-                               final BigDecimal price, final boolean isAvailable, final String category,
+                               final BigDecimal price, final String category,
                                final Integer numberOfDaysForBorrow) {
         return Book.builder()
                 .id(id)
@@ -78,10 +88,18 @@ public class TestUtil {
                 .stock(stock)
                 .name(name)
                 .price(price)
-                .isAvailable(isAvailable)
+                .isAvailable(true)
                 .category(category)
                 .numberOfDaysForBorrow(numberOfDaysForBorrow)
                 .build();
+    }
+
+    protected List<UserBookRequest> getTestUserBookRequests() {
+        final List<UserBookRequest> requests = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            requests.add(getTestUserBookRequest((long) i, (long) (i + 1), UserBookRequestStatus.PENDING));
+        }
+        return requests;
     }
 
     protected UserBookRequest getTestUserBookRequest(final Long bookId, final Long userId, final UserBookRequestStatus status) {
@@ -89,6 +107,7 @@ public class TestUtil {
                 .book(getTestBook(bookId))
                 .referredUser(getTestUser(userId))
                 .status(status)
+                .requestedAt(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
     }
 

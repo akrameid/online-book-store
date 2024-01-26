@@ -4,6 +4,7 @@ import com.example.onlinebookstore.dto.UserDto;
 import com.example.onlinebookstore.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
     @Mapping(target = "createdAt", source = "createdAt")
     UserDto mapToDto(User user);
 
