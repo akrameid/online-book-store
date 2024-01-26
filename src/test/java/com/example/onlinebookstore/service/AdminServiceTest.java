@@ -3,7 +3,9 @@ package com.example.onlinebookstore.service;
 import com.example.onlinebookstore.TestUtil;
 import com.example.onlinebookstore.dto.BookDto;
 import com.example.onlinebookstore.entity.Book;
+import com.example.onlinebookstore.exception.BookIdNotExistedException;
 import com.example.onlinebookstore.exception.BookNameExistedException;
+import com.example.onlinebookstore.exception.BookNameExistedInOtherBookException;
 import com.example.onlinebookstore.mapper.BookMapper;
 import com.example.onlinebookstore.mapper.UserMapper;
 import com.example.onlinebookstore.repository.BookRepository;
@@ -16,12 +18,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.onlinebookstore.constant.Constants.ADDED_SUCCESSFULLY;
-import static com.example.onlinebookstore.constant.ErrorMessages.BOOK_NAME_EXISTED;
+import static com.example.onlinebookstore.constant.ErrorMessages.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith({MockitoExtension.class})
 public class AdminServiceTest extends TestUtil {
@@ -66,5 +69,38 @@ public class AdminServiceTest extends TestUtil {
         final BookNameExistedException exception = assertThrows(BookNameExistedException.class,
                 () -> this.adminService.addBook(bookDto));
         assertEquals(String.format(BOOK_NAME_EXISTED, bookDto.getName()), exception.getMessage());
+    }
+
+    @Test
+    public void update() {
+        final Long bookId = 3L;
+        final BookDto bookDto = getTestBookDto(bookId);
+        final Book testBook = getTestBook(bookId);
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
+        when(this.bookRepository.existsByNameAndIdNotIn(bookDto.getName(), List.of(bookId))).thenReturn(false);
+        this.adminService.update(bookId, bookDto);
+        verify(this.bookRepository, times(1)).save(testBook);
+    }
+
+    @Test
+    public void update_newNameAlreadyExisted() {
+        final Long bookId = 3L;
+        final BookDto bookDto = getTestBookDto(bookId);
+        final Book testBook = getTestBook(bookId);
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
+        when(this.bookRepository.existsByNameAndIdNotIn(bookDto.getName(), List.of(bookId))).thenReturn(true);
+        final BookNameExistedInOtherBookException exception = assertThrows(BookNameExistedInOtherBookException.class,
+                () -> this.adminService.update(bookId, bookDto));
+        assertEquals(String.format(BOOK_NAME_EXISTED_IN_ANOTHER_BOOK, testBook.getName()), exception.getMessage());
+    }
+
+    @Test
+    public void update_bookNotFound() {
+        final Long bookId = 3L;
+        final BookDto bookDto = getTestBookDto(bookId);
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.empty());
+        final BookIdNotExistedException exception = assertThrows(BookIdNotExistedException.class,
+                () -> this.adminService.update(bookId, bookDto));
+        assertEquals(String.format(BOOK_ID_NOT_EXISTED, bookId), exception.getMessage());
     }
 }

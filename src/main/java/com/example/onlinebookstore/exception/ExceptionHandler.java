@@ -96,5 +96,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return ex.getMessage();
     }
 
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookNameExistedInOtherBookException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookNameExistedInOtherBookException(final BookNameExistedInOtherBookException ex) {
+        return ex.getMessage();
+    }
+
 
 }

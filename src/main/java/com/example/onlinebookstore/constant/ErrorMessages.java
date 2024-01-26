@@ -2,6 +2,7 @@ package com.example.onlinebookstore.constant;
 
 public class ErrorMessages {
     public static final String BOOK_NAME_EXISTED = "Book name \"%s\" is already existed";
+    public static final String BOOK_NAME_EXISTED_IN_ANOTHER_BOOK = "Book name \"%s\" is already existed in another book";
     public static final String BOOK_RETURNED = "Book name \"%s\" is already returned";
     public static final String BOOK_NOT_AVAILABLE = "Book name \"%s\" is not available";
     public static final String BOOK_REQUEST_IN_PROGRESS = "Book name \"%s\" is already requested by the same user and the request is in progress";

@@ -5,11 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
+    boolean existsByNameAndIdNotIn(String name, Collection<Long> ids);
     Optional<Book> findByName(String name);
 
     List<Book> findByNameContainsAndCategory(String name, String category);

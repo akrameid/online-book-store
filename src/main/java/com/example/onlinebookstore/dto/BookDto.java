@@ -3,6 +3,7 @@ package com.example.onlinebookstore.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ public class BookDto {
     private Long id;
     private String name;
     private String authorName;
+    @NotNull
     private BigDecimal price;
     private Integer stock;
     @JsonIgnore
@@ -23,6 +25,7 @@ public class BookDto {
     @JsonIgnore
     private LocalDateTime updatedAt;
     private Boolean isAvailable;
+    @NotNull
     private String category;
     private Integer numberOfDaysForBorrow;
 }

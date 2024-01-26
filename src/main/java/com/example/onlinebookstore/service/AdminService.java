@@ -19,7 +19,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.onlinebookstore.constant.Constants.*;
 
@@ -49,22 +48,20 @@ public class AdminService {
         }
     }
 
-    //TODO: add some validations
-    public String update(final Long id, final BookDto bookDto) {
-        final Optional<Book> optionalBook = this.bookRepository.findById(id);
-        if (optionalBook.isPresent()) {
-            final Book updatedBook = optionalBook.get();
-            updatedBook.setName(bookDto.getName());
-            updatedBook.setAuthorName(bookDto.getAuthorName());
-            updatedBook.setPrice(bookDto.getPrice());
-            updatedBook.setStock(bookDto.getStock());//TODO: check null
-            updatedBook.setIsAvailable(bookDto.getIsAvailable());
-            updatedBook.setCategory(bookDto.getCategory());
-            this.bookRepository.save(updatedBook);
-            return UPDATED_SUCCESSFULLY;
-        } else {
-            throw new BookIdNotExistedException(id);
+    public String update(final Long bookId, final BookDto bookDto) {
+        final Book book = this.bookRepository.findById(bookId).orElseThrow(() -> new BookIdNotExistedException(bookId));
+        final String newBookName = bookDto.getName();
+        if (this.bookRepository.existsByNameAndIdNotIn(newBookName, List.of(bookId))) {
+            throw new BookNameExistedInOtherBookException(book.getName());
         }
+        book.setName(newBookName);
+        book.setAuthorName(bookDto.getAuthorName());
+        book.setPrice(bookDto.getPrice());
+        book.setStock(bookDto.getStock());
+        book.setIsAvailable(bookDto.getIsAvailable());
+        book.setCategory(bookDto.getCategory());
+        this.bookRepository.save(book);
+        return UPDATED_SUCCESSFULLY;
     }
 
     public List<UserDto> getAllUsers() {
