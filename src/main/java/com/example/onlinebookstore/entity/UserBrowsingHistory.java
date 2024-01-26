@@ -14,8 +14,8 @@ import javax.validation.constraints.NotNull;
 @EntityListeners(AuditingEntityListener.class)
 public class UserBrowsingHistory {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_browsing_history_sequence")
+    @SequenceGenerator(name = "user_browsing_history_sequence", sequenceName = "user_browsing_history_id_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne()

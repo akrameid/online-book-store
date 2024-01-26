@@ -17,8 +17,8 @@ import java.sql.Timestamp;
 @EntityListeners(AuditingEntityListener.class)
 public class UserBookRequest {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_book_request_sequence")
+    @SequenceGenerator(name = "user_book_request_sequence", sequenceName = "user_book_request_id_seq", allocationSize = 1)
     private Long id;
     @NotNull
     @Enumerated(EnumType.STRING)

@@ -18,10 +18,10 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("{id}/books")
+    @GetMapping("{userId}/books")
     public List<BookBriefDto> getAllBooks(@RequestParam(name = "category", required = false) final String category,
                                           @RequestParam(name = "name", required = false) final String name,
-                                          @PathVariable("id") final Long userId) {
+                                          @PathVariable("userId") final Long userId) {
         return this.userService.getAllBooks(category, name, userId);
     }
 

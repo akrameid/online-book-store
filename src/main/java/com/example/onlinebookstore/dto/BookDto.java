@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class BookDto {
-    @JsonIgnore
     private Long id;
     private String name;
     private String authorName;

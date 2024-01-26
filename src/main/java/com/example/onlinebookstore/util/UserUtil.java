@@ -15,5 +15,13 @@ public class UserUtil {
                 .build();
     }
 
+    public User createUser(final String name, final String password, final Long id) {
+        return User.builder()
+                .name(name)
+                .password(password)
+                .id(id)
+                .build();
+    }
+
 
 }

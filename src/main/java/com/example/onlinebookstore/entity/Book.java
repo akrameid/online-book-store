@@ -20,8 +20,8 @@ import java.sql.Timestamp;
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_sequence")
+    @SequenceGenerator(name = "book_sequence", sequenceName = "book_id_seq", allocationSize = 1)
     private Long id;
 
     @NotNull
