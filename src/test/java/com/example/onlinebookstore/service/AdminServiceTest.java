@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -221,5 +223,55 @@ public class AdminServiceTest extends TestUtil {
         final BookRequestAlreadyRejectedException exception = assertThrows(BookRequestAlreadyRejectedException.class,
                 () -> this.adminService.reject(id));
         assertEquals(String.format(BOOK_REQUEST_ALREADY_REJECTED, id), exception.getMessage());
+    }
+
+    @Test
+    public void deleteBook() {
+        final Long bookId = 4L;
+        final Book testBook = getTestBook(bookId);
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
+        final List<UserBookRequest> testUserBookRequests = getTestUserBookRequests();
+        testUserBookRequests.forEach(x -> x.setStatus(UserBookRequestStatus.APPROVED));
+        testUserBookRequests.forEach(x -> x.setReturnedAt(Timestamp.valueOf(LocalDateTime.now())));
+        when(this.userBookRequestRepository.findByBook_Id(bookId)).thenReturn(testUserBookRequests);
+        final var result = this.adminService.deleteBook(bookId);
+        verify(this.userBookRequestRepository, times(1)).deleteAll(anyList());
+        verify(this.bookRepository, times(1)).delete(testBook);
+        assertEquals(String.format(BOOK_DELETED_SUCCESSFULLY, bookId), result);
+    }
+
+    @Test
+    public void deleteBook_bookNotFound() {
+        final Long bookId = 4L;
+        final Book testBook = getTestBook(bookId);
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.empty());
+        final BookIdNotExistedException exception = assertThrows(BookIdNotExistedException.class,
+                () -> this.adminService.deleteBook(bookId));
+        assertEquals(String.format(BOOK_ID_NOT_EXISTED, bookId), exception.getMessage());
+    }
+
+    @Test
+    public void deleteBook_pendingRequests() {
+        final Long bookId = 4L;
+        final Book testBook = getTestBook(bookId);
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
+        final List<UserBookRequest> testUserBookRequests = getTestUserBookRequests();
+        when(this.userBookRequestRepository.findByBook_Id(bookId)).thenReturn(testUserBookRequests);
+        final BookIdDeleteNotAllowedException exception = assertThrows(BookIdDeleteNotAllowedException.class,
+                () -> this.adminService.deleteBook(bookId));
+        assertEquals(String.format(BOOK_ID_DELETE_NOT_ALLOWED, bookId), exception.getMessage());
+    }
+
+    @Test
+    public void deleteBook_notReturnedBooks() {
+        final Long bookId = 4L;
+        final Book testBook = getTestBook(bookId);
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
+        final List<UserBookRequest> testUserBookRequests = getTestUserBookRequests();
+        testUserBookRequests.forEach(x -> x.setStatus(UserBookRequestStatus.APPROVED));
+        when(this.userBookRequestRepository.findByBook_Id(bookId)).thenReturn(testUserBookRequests);
+        final BookBorrowedCannotDeleteException exception = assertThrows(BookBorrowedCannotDeleteException.class,
+                () -> this.adminService.deleteBook(bookId));
+        assertEquals(String.format(BOOK_ID_BORROWED_DELETE_NOT_ALLOWED, bookId), exception.getMessage());
     }
 }

@@ -269,6 +269,7 @@ public class UserServiceTest extends TestUtil {
         final Long bookId = 2L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
         testUserBookRequest.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        testUserBookRequest.getBook().setBorrowedCopiesCount(1);
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
         final var result = this.userService.returnBook(userId, bookId);
         verify(this.userBookRequestRepository, times(1)).save(any());
@@ -308,6 +309,7 @@ public class UserServiceTest extends TestUtil {
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
         testUserBookRequest.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now().minusDays(10)));
         testUserBookRequest.getBook().setNumberOfDaysForBorrow(2);
+        testUserBookRequest.getBook().setBorrowedCopiesCount(1);
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
         final var result = this.userService.returnBook(userId, bookId);
         verify(this.userBookRequestRepository, times(1)).save(any());
@@ -329,6 +331,19 @@ public class UserServiceTest extends TestUtil {
         final BookReturnedException exception = assertThrows(BookReturnedException.class,
                 () -> this.userService.returnBook(userId, bookId));
         assertEquals(String.format(BOOK_RETURNED, testUserBookRequest.getBook().getName()), exception.getMessage());
+    }
+
+    @Test
+    public void returnBook_noBorrowedCopiesCountExist() {
+        final Long userId = 2L;
+        final Long bookId = 2L;
+        final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
+        testUserBookRequest.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        testUserBookRequest.getBook().setBorrowedCopiesCount(0);
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
+        final BookBorrowCopiesNotValidException exception = assertThrows(BookBorrowCopiesNotValidException.class,
+                () -> this.userService.returnBook(userId, bookId));
+        assertEquals(String.format(BOOK_ID_NUMBER_OF_BORROWED_COPIES_LESS_ZERO, bookId), exception.getMessage());
     }
 
     @Test
