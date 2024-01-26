@@ -24,7 +24,6 @@ public class BookDto {
     private LocalDateTime createdAt;
     @JsonIgnore
     private LocalDateTime updatedAt;
-    private Boolean isAvailable;
     @NotNull
     private String category;
     private Integer numberOfDaysForBorrow;

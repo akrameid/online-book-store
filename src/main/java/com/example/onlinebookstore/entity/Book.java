@@ -36,7 +36,6 @@ public class Book {
     private Timestamp createdAt;
     @LastModifiedDate
     private Timestamp updatedAt;
-    private Boolean isAvailable;
     @NotNull
     private String category;
     private Integer numberOfDaysForBorrow;

@@ -13,6 +13,7 @@ import com.example.onlinebookstore.repository.BookRepository;
 import com.example.onlinebookstore.repository.UserBookRequestRepository;
 import com.example.onlinebookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -31,6 +32,9 @@ public class AdminService {
     private final UserMapper userMapper;
     private final UserBookRequestRepository userBookRequestRepository;
 
+    @Value("${max.number.of.book.copies}")
+    private Integer maxNumberOfBookCopies;
+
     public List<BookDto> getAllBooks() {
         final List<Book> books = this.bookRepository.findAll();
         return this.bookMapper.mapToDto(books);
@@ -46,6 +50,9 @@ public class AdminService {
         if (this.bookRepository.existsByName(bookDto.getName())) {
             throw new BookNameExistedException(bookDto.getName());
         }
+        if (bookDto.getStock() > this.maxNumberOfBookCopies) {
+            throw new BookCopiesExceededException(bookDto.getName(), bookDto.getStock(), this.maxNumberOfBookCopies);
+        }
     }
 
     public String update(final Long bookId, final BookDto bookDto) {
@@ -58,7 +65,6 @@ public class AdminService {
         book.setAuthorName(bookDto.getAuthorName());
         book.setPrice(bookDto.getPrice());
         book.setStock(bookDto.getStock());
-        book.setIsAvailable(bookDto.getIsAvailable());
         book.setCategory(bookDto.getCategory());
         this.bookRepository.save(book);
         return UPDATED_SUCCESSFULLY;
@@ -97,11 +103,14 @@ public class AdminService {
         if (request.getStatus().equals(UserBookRequestStatus.APPROVED)) {
             throw new BookRequestAlreadyApprovedException(id);
         }
+        if (request.getBook().getStock() < 1) {
+            throw new BookNotAvailableException(request.getBook().getName());
+        }
         request.setStatus(UserBookRequestStatus.APPROVED);
         request.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         this.userBookRequestRepository.save(request);
         final Book book = request.getBook();
-        book.setIsAvailable(false);
+        book.setStock(book.getStock() - 1);
         this.bookRepository.save(book);
         return String.format(USER_REQUEST_APPROVED, book.getName());
     }

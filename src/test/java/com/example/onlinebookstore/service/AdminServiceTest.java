@@ -17,14 +17,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.onlinebookstore.constant.Constants.*;
 import static com.example.onlinebookstore.constant.ErrorMessages.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith({MockitoExtension.class})
@@ -59,8 +59,20 @@ public class AdminServiceTest extends TestUtil {
         when(this.bookRepository.existsByName(bookDto.getName())).thenReturn(false);
         when(this.bookMapper.map(bookDto)).then(
                 invocationOnMock -> BookMapper.INSTANCE.map(bookDto));
+
+        ReflectionTestUtils.setField(this.adminService, "maxNumberOfBookCopies", 1);
         final var result = this.adminService.addBook(bookDto);
         assertEquals(ADDED_SUCCESSFULLY, result);
+    }
+
+    @Test
+    public void addBook_numberOfCopiesExceeded() {
+        final BookDto bookDto = getTestBookDto(2L, true);
+        when(this.bookRepository.existsByName(bookDto.getName())).thenReturn(false);
+        ReflectionTestUtils.setField(this.adminService, "maxNumberOfBookCopies", 1);
+        final BookCopiesExceededException exception = assertThrows(BookCopiesExceededException.class,
+                () -> this.adminService.addBook(bookDto));
+        assertEquals(String.format(NEW_BOOK_COPIES_EXCCEDED, bookDto.getName(), bookDto.getStock(), 1), exception.getMessage());
     }
 
     @Test
@@ -139,13 +151,25 @@ public class AdminServiceTest extends TestUtil {
     public void approve() {
         final Long id = 3L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(id, UserBookRequestStatus.PENDING);
+        testUserBookRequest.getBook().setStock(1);
         when(this.userBookRequestRepository.findById(id)).thenReturn(Optional.of(testUserBookRequest));
         final var result = this.adminService.approve(id);
         verify(this.userBookRequestRepository, times(1)).save(testUserBookRequest);
         verify(this.bookRepository, times(1)).save(testUserBookRequest.getBook());
         assertEquals(String.format(USER_REQUEST_APPROVED, testUserBookRequest.getBook().getName()), result);
-        assertEquals(false, testUserBookRequest.getBook().getIsAvailable());
+        assertFalse(testUserBookRequest.getBook().getStock() > 0);
         assertEquals(UserBookRequestStatus.APPROVED, testUserBookRequest.getStatus());
+    }
+
+    @Test
+    public void approve_bookNotAvailable() {
+        final Long id = 3L;
+        final UserBookRequest testUserBookRequest = getTestUserBookRequest(id, UserBookRequestStatus.PENDING);
+        testUserBookRequest.getBook().setStock(0);
+        when(this.userBookRequestRepository.findById(id)).thenReturn(Optional.of(testUserBookRequest));
+        final BookNotAvailableException exception = assertThrows(BookNotAvailableException.class,
+                () -> this.adminService.approve(id));
+        assertEquals(String.format(BOOK_NOT_AVAILABLE, testUserBookRequest.getBook().getName()), exception.getMessage());
     }
 
     @Test

@@ -18,7 +18,6 @@ public class BookUtil {
                 .stock(stock)
                 .name(name)
                 .price(price)
-                .isAvailable(isAvailable)
                 .category(category)
                 .numberOfDaysForBorrow(numberOfDaysForBorrow)
                 .build();

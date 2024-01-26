@@ -73,7 +73,6 @@ public class TestUtil {
                 .stock(stock)
                 .name(name)
                 .price(price)
-                .isAvailable(isAvailable)
                 .category(category)
                 .numberOfDaysForBorrow(numberOfDaysForBorrow)
                 .build();
@@ -88,7 +87,6 @@ public class TestUtil {
                 .stock(stock)
                 .name(name)
                 .price(price)
-                .isAvailable(true)
                 .category(category)
                 .numberOfDaysForBorrow(numberOfDaysForBorrow)
                 .build();

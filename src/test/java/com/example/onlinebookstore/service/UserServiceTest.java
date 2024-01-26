@@ -28,8 +28,7 @@ import java.util.Optional;
 
 import static com.example.onlinebookstore.constant.Constants.*;
 import static com.example.onlinebookstore.constant.ErrorMessages.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith({MockitoExtension.class})
@@ -169,7 +168,6 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 1L;
         final Long bookId = 1L;
         final Book testBook = getTestBook(bookId);
-        testBook.setIsAvailable(true);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.empty());
         final User testUser = getTestUser(userId);
@@ -191,7 +189,6 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 1L;
         final Long bookId = 1L;
         final Book testBook = getTestBook(bookId);
-        testBook.setIsAvailable(true);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.empty());
         final BookIdNotExistedException exception = assertThrows(BookIdNotExistedException.class,
                 () -> this.userService.requestBorrow(userId, bookId));
@@ -203,7 +200,6 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 1L;
         final Long bookId = 1L;
         final Book testBook = getTestBook(bookId);
-        testBook.setIsAvailable(true);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.of(getTestUserBookRequest(bookId, userId, UserBookRequestStatus.PENDING)));
 
@@ -217,7 +213,6 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 1L;
         final Long bookId = 1L;
         final Book testBook = getTestBook(bookId);
-        testBook.setIsAvailable(true);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.empty());
         final User testUser = getTestUser(userId);
@@ -233,7 +228,7 @@ public class UserServiceTest extends TestUtil {
         final Long userId = 1L;
         final Long bookId = 1L;
         final Book testBook = getTestBook(bookId);
-        testBook.setIsAvailable(false);
+        testBook.setStock(0);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.empty());
         final User testUser = getTestUser(userId);
@@ -279,7 +274,7 @@ public class UserServiceTest extends TestUtil {
         verify(this.userBookRequestRepository, times(1)).save(any());
         final long differenceInMinutes = ChronoUnit.MINUTES.between(testUserBookRequest.getReturnedAt().toLocalDateTime(), LocalDateTime.now());
         assertEquals(0, differenceInMinutes);
-        assertEquals(true, testUserBookRequest.getBook().getIsAvailable());
+        assertTrue(testUserBookRequest.getBook().getStock() > 0);
         verify(this.bookRepository, times(1)).save(any());
         assertEquals(USER_BOOK_RETURNED, result);
     }
@@ -318,7 +313,7 @@ public class UserServiceTest extends TestUtil {
         verify(this.userBookRequestRepository, times(1)).save(any());
         final long differenceInMinutes = ChronoUnit.MINUTES.between(testUserBookRequest.getReturnedAt().toLocalDateTime(), LocalDateTime.now());
         assertEquals(0, differenceInMinutes);
-        assertEquals(true, testUserBookRequest.getBook().getIsAvailable());
+        assertTrue(testUserBookRequest.getBook().getStock() > 0);
         verify(this.bookRepository, times(1)).save(any());
         assertEquals(USER_BOOK_RETURNED_LATE, result);
     }

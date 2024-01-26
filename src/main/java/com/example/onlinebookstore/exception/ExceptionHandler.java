@@ -103,5 +103,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return ex.getMessage();
     }
 
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookCopiesExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookCopiesExceededException(final BookCopiesExceededException ex) {
+        return ex.getMessage();
+    }
+
 
 }

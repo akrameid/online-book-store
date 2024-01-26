@@ -16,7 +16,6 @@ public interface BookMapper {
 
     BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
     @Mapping(target = "createdAt", source = "createdAt")
-    @Mapping(target = "isAvailable", source = "isAvailable")
     BookDto mapToDto(Book book);
 
     List<BookDto> mapToDto(List<Book> book);
