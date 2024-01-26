@@ -1,5 +1,6 @@
 package com.example.onlinebookstore;
 
+import com.example.onlinebookstore.dto.BookDto;
 import com.example.onlinebookstore.dto.NewUserDto;
 import com.example.onlinebookstore.entity.Book;
 import com.example.onlinebookstore.entity.User;
@@ -41,6 +42,31 @@ public class TestUtil {
     protected Book getTestBook(final Long bookId) {
         return getTestBook(bookId, "test book " + bookId, "test author " + bookId, Math.toIntExact(bookId), BigDecimal.valueOf(bookId),
                 true, "cat" + bookId, Math.toIntExact(bookId));
+    }
+
+    protected BookDto getTestBookDto(final Long id) {
+        return getTestBookDto(id, "book " + id, "author " + id, Math.toIntExact(id)
+                , BigDecimal.valueOf(id), true, "cat " + id, Math.toIntExact(id));
+    }
+
+    protected BookDto getTestBookDto(final Long id, final boolean isAvailable) {
+        return getTestBookDto(id, "book " + id, "author " + id, Math.toIntExact(id)
+                , BigDecimal.valueOf(id), isAvailable, "cat " + id, Math.toIntExact(id));
+    }
+
+    protected BookDto getTestBookDto(final Long id, final String name, final String authorName, final int stock,
+                                     final BigDecimal price, final boolean isAvailable, final String category,
+                                     final Integer numberOfDaysForBorrow) {
+        return BookDto.builder()
+                .id(id)
+                .authorName(authorName)
+                .stock(stock)
+                .name(name)
+                .price(price)
+                .isAvailable(isAvailable)
+                .category(category)
+                .numberOfDaysForBorrow(numberOfDaysForBorrow)
+                .build();
     }
 
     protected Book getTestBook(final Long id, final String name, final String authorName, final int stock,
