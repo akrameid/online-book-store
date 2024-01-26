@@ -29,7 +29,8 @@ public class BookDto {
     private String category;
     @NotNull
     private Integer numberOfDaysForBorrow;
-    private Integer stockLevel;
+    @Builder.Default()
+    private Integer stockLevel = 1;
     @Builder.Default()
     private Integer borrowedCopiesCount = 0;
 }

@@ -1,11 +1,11 @@
 package com.example.onlinebookstore.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -34,7 +34,8 @@ public class Book {
     private Integer inStock;
     @Builder.Default()
     private Integer borrowedCopiesCount = 0;
-    private Integer stockLevel;
+    @Builder.Default()
+    private Integer stockLevel = 1;
     @CreatedDate
     private Timestamp createdAt;
     @LastModifiedDate

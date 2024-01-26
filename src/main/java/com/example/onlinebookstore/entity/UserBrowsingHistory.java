@@ -1,11 +1,10 @@
 package com.example.onlinebookstore.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
 @Entity(name = "user_browsing_history")
 @Getter
 @Setter

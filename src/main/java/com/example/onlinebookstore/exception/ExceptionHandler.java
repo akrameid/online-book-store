@@ -3,7 +3,6 @@ package com.example.onlinebookstore.exception;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -21,7 +20,8 @@ import java.util.Map;
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex, final HttpHeaders headers, final HttpStatusCode status, final WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
+                                                                  final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
 
         final Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -34,7 +34,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(final HttpMessageNotReadableException ex, final HttpHeaders headers, final HttpStatusCode status, final WebRequest request) {
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(final HttpMessageNotReadableException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
         final Throwable mostSpecificCause = ex.getMostSpecificCause();
         final Map<String, String> errors = new HashMap<>();
         if (mostSpecificCause instanceof UnrecognizedPropertyException) {
@@ -50,6 +50,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
             return new ResponseEntity(exceptionName, headers, status);
         }
     }
+
 
     @ResponseBody
     @org.springframework.web.bind.annotation.ExceptionHandler(BookNameExistedException.class)
