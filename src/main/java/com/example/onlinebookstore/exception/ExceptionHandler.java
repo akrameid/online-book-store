@@ -55,9 +55,9 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     @ResponseBody
-    @org.springframework.web.bind.annotation.ExceptionHandler(BookRequestNotFoundException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookRequestNotApprovedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String bookRequestNotFoundException(final BookRequestNotFoundException ex) {
+    String bookRequestNotApprovedException(final BookRequestNotApprovedException ex) {
         return ex.getMessage();
     }
 
@@ -72,6 +72,13 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(UserIdNotExistedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     String userIdNotExistedException(final UserIdNotExistedException ex) {
+        return ex.getMessage();
+    }
+
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookRequestNotCreatedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookRequestNotCreatedException(final BookRequestNotCreatedException ex) {
         return ex.getMessage();
     }
 

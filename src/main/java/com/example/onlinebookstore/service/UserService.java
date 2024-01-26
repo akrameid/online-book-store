@@ -107,9 +107,11 @@ public class UserService {
     }
 
     public String returnBook(final Long userId, final Long bookId) {
-        final var request = this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId).orElseThrow();//TODO: add exception
+        final var request =
+                this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId).
+                        orElseThrow(() -> new BookRequestNotCreatedException(bookId));
         if (!request.getStatus().equals(UserBookRequestStatus.APPROVED)) {
-            throw new BookRequestNotFoundException(request.getBook().getName());
+            throw new BookRequestNotApprovedException(request.getBook().getName());
         }
         if (request.getReturnedAt() != null) {
             throw new BookReturnedException(request.getBook().getName());

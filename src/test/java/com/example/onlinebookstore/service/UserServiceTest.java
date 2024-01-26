@@ -20,11 +20,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.onlinebookstore.constant.Constants.USER_ADDED_SUCCESSFULLY;
-import static com.example.onlinebookstore.constant.Constants.USER_REQUEST_RECEIVED;
+import static com.example.onlinebookstore.constant.Constants.*;
 import static com.example.onlinebookstore.constant.ErrorMessages.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -245,8 +247,8 @@ public class UserServiceTest extends TestUtil {
 
     @Test
     public void registerUser() {
-        final String name = "n";
-        final String password = "p";
+        final String name = "n1";
+        final String password = "p1";
         final NewUserDto testNewUserDto = getTestNewUserDto(name, password);
         when(this.userRepository.findByNameAndPassword(name, password)).thenReturn(Optional.empty());
         when(this.userUtil.createUser(name, password)).thenCallRealMethod();
@@ -257,8 +259,8 @@ public class UserServiceTest extends TestUtil {
 
     @Test
     public void registerUser_alreadyRegistered() {
-        final String name = "n";
-        final String password = "p";
+        final String name = "n2";
+        final String password = "p2";
         final NewUserDto testNewUserDto = getTestNewUserDto(name, password);
         when(this.userRepository.findByNameAndPassword(name, password)).thenReturn(Optional.of(getTestUser(name, password)));
         final UserAlreadyRegisteredException exception = assertThrows(UserAlreadyRegisteredException.class,
@@ -266,4 +268,83 @@ public class UserServiceTest extends TestUtil {
         assertEquals(String.format(USER_ALREADY_REGISTERED, name), exception.getMessage());
     }
 
+    @Test
+    public void returnBook() {
+        final Long userId = 2L;
+        final Long bookId = 2L;
+        final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
+        testUserBookRequest.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
+        final var result = this.userService.returnBook(userId, bookId);
+        verify(this.userBookRequestRepository, times(1)).save(any());
+        final long differenceInMinutes = ChronoUnit.MINUTES.between(testUserBookRequest.getReturnedAt().toLocalDateTime(), LocalDateTime.now());
+        assertEquals(0, differenceInMinutes);
+        assertEquals(true, testUserBookRequest.getBook().getIsAvailable());
+        verify(this.bookRepository, times(1)).save(any());
+        assertEquals(USER_BOOK_RETURNED, result);
+    }
+
+    @Test
+    public void returnBook_noBookBorrowed() {
+        final Long userId = 2L;
+        final Long bookId = 2L;
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.empty());
+        final BookRequestNotCreatedException exception = assertThrows(BookRequestNotCreatedException.class,
+                () -> this.userService.returnBook(userId, bookId));
+        assertEquals(String.format(BOOK_REQUEST_NOT_CREATED, bookId), exception.getMessage());
+    }
+
+    @Test
+    public void returnBook_requestNotApproved() {
+        final Long userId = 2L;
+        final Long bookId = 2L;
+        final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.PENDING);
+        testUserBookRequest.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
+        final BookRequestNotApprovedException exception = assertThrows(BookRequestNotApprovedException.class,
+                () -> this.userService.returnBook(userId, bookId));
+        assertEquals(String.format(BOOK_REQUEST_NOT_APPROVED, testUserBookRequest.getBook().getName()), exception.getMessage());
+    }
+
+    @Test
+    public void returnBook_withExtraFees() {
+        final Long userId = 2L;
+        final Long bookId = 2L;
+        final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
+        testUserBookRequest.setApprovedAt(Timestamp.valueOf(LocalDateTime.now().minusDays(10)));
+        testUserBookRequest.getBook().setNumberOfDaysForBorrow(2);
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
+        final var result = this.userService.returnBook(userId, bookId);
+        verify(this.userBookRequestRepository, times(1)).save(any());
+        final long differenceInMinutes = ChronoUnit.MINUTES.between(testUserBookRequest.getReturnedAt().toLocalDateTime(), LocalDateTime.now());
+        assertEquals(0, differenceInMinutes);
+        assertEquals(true, testUserBookRequest.getBook().getIsAvailable());
+        verify(this.bookRepository, times(1)).save(any());
+        assertEquals(USER_BOOK_RETURNED_LATE, result);
+    }
+
+    @Test
+    public void returnBook_alreadyReturned() {
+        final Long userId = 2L;
+        final Long bookId = 2L;
+        final UserBookRequest testUserBookRequest = getTestUserBookRequest(bookId, userId, UserBookRequestStatus.APPROVED);
+        testUserBookRequest.setApprovedAt(Timestamp.valueOf(LocalDateTime.now()));
+        testUserBookRequest.setReturnedAt(Timestamp.valueOf(LocalDateTime.now()));
+        when(this.userBookRequestRepository.findByBook_IdAndReferredUser_Id(bookId, userId)).thenReturn(Optional.of(testUserBookRequest));
+        final BookReturnedException exception = assertThrows(BookReturnedException.class,
+                () -> this.userService.returnBook(userId, bookId));
+        assertEquals(String.format(BOOK_RETURNED, testUserBookRequest.getBook().getName()), exception.getMessage());
+    }
+
+    @Test
+    public void getSuggestedBooks() {
+        final Long userId = 3L;
+        final List<Book> testBooks = getTestBooks(3);
+        when(this.bookRepository.getSuggestedBooks(userId)).thenReturn(testBooks);
+        when(this.bookMapper.mapToBriefDto(testBooks)).then(
+                invocationOnMock -> BookMapper.INSTANCE.mapToBriefDto(testBooks)
+        );
+        final var result = this.userService.getSuggestedBooks(userId);
+        assertEquals(testBooks.size(), result.size());
+    }
 }

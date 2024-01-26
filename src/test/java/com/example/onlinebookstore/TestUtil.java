@@ -27,16 +27,20 @@ public class TestUtil {
     }
 
     protected List<Book> getTestBooks() {
+        return getTestBooks(4);
+    }
+
+    protected List<Book> getTestBooks(final int count) {
         final List<Book> books = new ArrayList<>();
-        for (int i = 1; i < 4; i++) {
+        for (int i = 1; i < count; i++) {
             books.add(getTestBook((long) i));
         }
         return books;
     }
 
     protected Book getTestBook(final Long bookId) {
-        return getTestBook(bookId, "test book " + bookId, "test author " + bookId, 1, BigDecimal.valueOf(1),
-                true, "cat", 1);
+        return getTestBook(bookId, "test book " + bookId, "test author " + bookId, Math.toIntExact(bookId), BigDecimal.valueOf(bookId),
+                true, "cat" + bookId, Math.toIntExact(bookId));
     }
 
     protected Book getTestBook(final Long id, final String name, final String authorName, final int stock,
@@ -55,12 +59,11 @@ public class TestUtil {
     }
 
     protected UserBookRequest getTestUserBookRequest(final Long bookId, final Long userId, final UserBookRequestStatus status) {
-        final UserBookRequest userBookRequest = UserBookRequest.builder()
+        return UserBookRequest.builder()
                 .book(getTestBook(bookId))
                 .referredUser(getTestUser(userId))
                 .status(status)
                 .build();
-        return userBookRequest;
     }
 
     protected NewUserDto getTestNewUserDto(final String name, final String password) {
