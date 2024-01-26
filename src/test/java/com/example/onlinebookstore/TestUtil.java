@@ -102,6 +102,16 @@ public class TestUtil {
         return requests;
     }
 
+    protected UserBookRequest getTestUserBookRequest(final Long requestId, final UserBookRequestStatus status) {
+        return UserBookRequest.builder()
+                .book(getTestBook(requestId))
+                .referredUser(getTestUser(requestId))
+                .status(status)
+                .id(requestId)
+                .requestedAt(Timestamp.valueOf(LocalDateTime.now()))
+                .build();
+    }
+
     protected UserBookRequest getTestUserBookRequest(final Long bookId, final Long userId, final UserBookRequestStatus status) {
         return UserBookRequest.builder()
                 .book(getTestBook(bookId))

@@ -92,9 +92,8 @@ public class AdminService {
     }
 
     public String approve(final Long id) {
-        final var request =
-                this.userBookRequestRepository.findById(id).
-                        orElseThrow(() -> new BookRequestNotCreatedException(id));
+        final var request = this.userBookRequestRepository.findById(id).
+                orElseThrow(() -> new BookRequestNotCreatedException(id));
         if (request.getStatus().equals(UserBookRequestStatus.APPROVED)) {
             throw new BookRequestAlreadyApprovedException(id);
         }
