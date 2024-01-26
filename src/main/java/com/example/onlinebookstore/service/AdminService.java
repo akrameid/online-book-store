@@ -50,8 +50,8 @@ public class AdminService {
         if (this.bookRepository.existsByName(bookDto.getName())) {
             throw new BookNameExistedException(bookDto.getName());
         }
-        if (bookDto.getStock() > this.maxNumberOfBookCopies) {
-            throw new BookCopiesExceededException(bookDto.getName(), bookDto.getStock(), this.maxNumberOfBookCopies);
+        if (bookDto.getInStock() > this.maxNumberOfBookCopies) {
+            throw new BookCopiesExceededException(bookDto.getName(), bookDto.getInStock(), this.maxNumberOfBookCopies);
         }
     }
 
@@ -64,7 +64,7 @@ public class AdminService {
         book.setName(newBookName);
         book.setAuthorName(bookDto.getAuthorName());
         book.setPrice(bookDto.getPrice());
-        book.setStock(bookDto.getStock());
+        book.setInStock(bookDto.getInStock());
         book.setCategory(bookDto.getCategory());
         this.bookRepository.save(book);
         return UPDATED_SUCCESSFULLY;
@@ -103,14 +103,15 @@ public class AdminService {
         if (request.getStatus().equals(UserBookRequestStatus.APPROVED)) {
             throw new BookRequestAlreadyApprovedException(id);
         }
-        if (request.getBook().getStock() < 1) {
+        if (request.getBook().getInStock() < 1) {
             throw new BookNotAvailableException(request.getBook().getName());
         }
         request.setStatus(UserBookRequestStatus.APPROVED);
         request.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         this.userBookRequestRepository.save(request);
         final Book book = request.getBook();
-        book.setStock(book.getStock() - 1);
+        book.setInStock(book.getInStock() - 1);
+        book.setBorrowedCopiesCount(book.getBorrowedCopiesCount() + 1);
         this.bookRepository.save(book);
         return String.format(USER_REQUEST_APPROVED, book.getName());
     }
@@ -126,5 +127,19 @@ public class AdminService {
         request.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         this.userBookRequestRepository.save(request);
         return String.format(USER_REQUEST_REJECTED, request.getBook().getName());
+    }
+
+    public String deleteBook(final Long bookId) {
+        final var book = this.bookRepository.findById(bookId).orElseThrow(() -> new BookIdNotExistedException(bookId));
+        final var requests = this.userBookRequestRepository.findByBook_Id(bookId);
+        if (requests.stream().anyMatch(x -> x.getStatus().equals(UserBookRequestStatus.PENDING))) {
+            throw new BookIdDeleteNotAllowedException(bookId);
+        }
+        if (requests.stream().anyMatch(x -> x.getStatus().equals(UserBookRequestStatus.APPROVED) && x.getReturnedAt() == null)) {
+            throw new BookBorrowedCannotDeleteException(bookId);
+        }
+        this.userBookRequestRepository.deleteAll(requests);
+        this.bookRepository.delete(book);
+        return String.format(BOOK_DELETED_SUCCESSFULLY, bookId);
     }
 }

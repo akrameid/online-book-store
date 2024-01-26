@@ -72,7 +72,7 @@ public class AdminServiceTest extends TestUtil {
         ReflectionTestUtils.setField(this.adminService, "maxNumberOfBookCopies", 1);
         final BookCopiesExceededException exception = assertThrows(BookCopiesExceededException.class,
                 () -> this.adminService.addBook(bookDto));
-        assertEquals(String.format(NEW_BOOK_COPIES_EXCCEDED, bookDto.getName(), bookDto.getStock(), 1), exception.getMessage());
+        assertEquals(String.format(NEW_BOOK_COPIES_EXCCEDED, bookDto.getName(), bookDto.getInStock(), 1), exception.getMessage());
     }
 
     @Test
@@ -151,13 +151,13 @@ public class AdminServiceTest extends TestUtil {
     public void approve() {
         final Long id = 3L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(id, UserBookRequestStatus.PENDING);
-        testUserBookRequest.getBook().setStock(1);
+        testUserBookRequest.getBook().setInStock(1);
         when(this.userBookRequestRepository.findById(id)).thenReturn(Optional.of(testUserBookRequest));
         final var result = this.adminService.approve(id);
         verify(this.userBookRequestRepository, times(1)).save(testUserBookRequest);
         verify(this.bookRepository, times(1)).save(testUserBookRequest.getBook());
         assertEquals(String.format(USER_REQUEST_APPROVED, testUserBookRequest.getBook().getName()), result);
-        assertFalse(testUserBookRequest.getBook().getStock() > 0);
+        assertFalse(testUserBookRequest.getBook().getInStock() > 0);
         assertEquals(UserBookRequestStatus.APPROVED, testUserBookRequest.getStatus());
     }
 
@@ -165,7 +165,7 @@ public class AdminServiceTest extends TestUtil {
     public void approve_bookNotAvailable() {
         final Long id = 3L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(id, UserBookRequestStatus.PENDING);
-        testUserBookRequest.getBook().setStock(0);
+        testUserBookRequest.getBook().setInStock(0);
         when(this.userBookRequestRepository.findById(id)).thenReturn(Optional.of(testUserBookRequest));
         final BookNotAvailableException exception = assertThrows(BookNotAvailableException.class,
                 () -> this.adminService.approve(id));

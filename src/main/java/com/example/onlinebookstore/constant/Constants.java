@@ -9,4 +9,6 @@ public class Constants {
     public static final String USER_REQUEST_REJECTED = "User request to borrow book \"%s\" rejected";
     public static final String USER_BOOK_RETURNED = "User returned the book and book is now available";
     public static final String USER_BOOK_RETURNED_LATE = "User returned the book and book is now available. But this user have to pay more fees due to late return date";
+
+    public static final String BOOK_DELETED_SUCCESSFULLY = "Book id %d deleted successfully";
 }

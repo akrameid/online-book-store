@@ -110,5 +110,26 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return ex.getMessage();
     }
 
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookIdDeleteNotAllowedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookIdDeleteNotAllowedException(final BookIdDeleteNotAllowedException ex) {
+        return ex.getMessage();
+    }
+
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookBorrowCopiesNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookBorrowCopiesNotValidException(final BookBorrowCopiesNotValidException ex) {
+        return ex.getMessage();
+    }
+
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookBorrowedCannotDeleteException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookBorrowedCannotDeleteException(final BookBorrowedCannotDeleteException ex) {
+        return ex.getMessage();
+    }
+
 
 }

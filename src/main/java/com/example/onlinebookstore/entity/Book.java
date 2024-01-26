@@ -31,7 +31,9 @@ public class Book {
     @NotNull
     private BigDecimal price;
     @NotNull
-    private Integer stock;
+    private Integer inStock;
+    @Builder.Default()
+    private Integer borrowedCopiesCount = 0;
     private Integer stockLevel;
     @CreatedDate
     private Timestamp createdAt;

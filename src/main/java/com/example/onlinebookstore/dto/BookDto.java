@@ -19,7 +19,7 @@ public class BookDto {
     private String authorName;
     @NotNull
     private BigDecimal price;
-    private Integer stock;
+    private Integer inStock;
     @JsonIgnore
     private LocalDateTime createdAt;
     @JsonIgnore
@@ -28,4 +28,6 @@ public class BookDto {
     private String category;
     private Integer numberOfDaysForBorrow;
     private Integer stockLevel;
+    @Builder.Default()
+    private Integer borrowedCopiesCount = 0;
 }

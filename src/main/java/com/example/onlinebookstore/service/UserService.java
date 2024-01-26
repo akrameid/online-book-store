@@ -82,7 +82,7 @@ public class UserService {
             throw new BookRequestInProgressException(book.getName());
         }
         final User user = this.userRepository.findById(userId).orElseThrow(() -> new UserIdNotExistedException(userId)); //TODO: handle exception
-        if (book.getStock() < 1) {
+        if (book.getInStock() < 1) {
             throw new BookNotAvailableException(book.getName());
         }
         final UserBookRequest userBookRequest = UserBookRequest.builder()
@@ -117,7 +117,11 @@ public class UserService {
         request.setReturnedAt(Timestamp.valueOf(LocalDateTime.now()));
         this.userBookRequestRepository.save(request);
         final Book book = request.getBook();
-        book.setStock(book.getStock() + 1);
+        book.setInStock(book.getInStock() + 1);
+        if (book.getBorrowedCopiesCount() == 0) {
+            throw new BookBorrowCopiesNotValidException(bookId);
+        }
+        book.setBorrowedCopiesCount(book.getBorrowedCopiesCount() - 1);
         this.bookRepository.save(book);
         if (ChronoUnit.DAYS.between(request.getUpdatedAt().toLocalDateTime(), LocalDateTime.now()) > request.getBook().getNumberOfDaysForBorrow()) {
             return USER_BOOK_RETURNED_LATE;

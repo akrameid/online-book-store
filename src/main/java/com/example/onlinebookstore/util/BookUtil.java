@@ -15,7 +15,7 @@ public class BookUtil {
                            final Integer numberOfDaysForBorrow) {
         return Book.builder()
                 .authorName(authorName)
-                .stock(stock)
+                .inStock(stock)
                 .name(name)
                 .price(price)
                 .category(category)

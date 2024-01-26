@@ -28,6 +28,11 @@ public class AdminController {
         return new ResponseEntity<>(this.adminService.addBook(bookDto), HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/books/{id}")
+    ResponseEntity<String> deleteBook(@PathVariable final Long id) {
+        return new ResponseEntity<>(this.adminService.deleteBook(id), HttpStatus.OK);
+    }
+
     @PutMapping("/books/{id}")
     ResponseEntity<String> update(@PathVariable final Long bookId, @Valid @RequestBody final BookDto bookDto) {
         return new ResponseEntity<>(this.adminService.update(bookId, bookDto), HttpStatus.OK);
