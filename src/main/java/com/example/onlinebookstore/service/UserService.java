@@ -99,7 +99,7 @@ public class UserService {
     public String registerUser(final NewUserDto newUserDto) {
         final var existingUser = this.userRepository.findByNameAndPassword(newUserDto.getName(), newUserDto.getPassword());
         if (existingUser.isPresent()) {
-            throw new UserWithNameExistedException(newUserDto.getName());
+            throw new UserAlreadyRegisteredException(newUserDto.getName());
         } else {
             this.userRepository.save(this.userUtil.createUser(newUserDto.getName(), newUserDto.getPassword()));
             return USER_ADDED_SUCCESSFULLY;

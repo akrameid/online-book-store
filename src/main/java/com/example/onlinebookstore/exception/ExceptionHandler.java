@@ -33,9 +33,9 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     @ResponseBody
-    @org.springframework.web.bind.annotation.ExceptionHandler(UserWithNameExistedException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyRegisteredException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String userWithNameExistedException(final UserWithNameExistedException ex) {
+    String userAlreadyRegisteredException(final UserAlreadyRegisteredException ex) {
         return ex.getMessage();
     }
 

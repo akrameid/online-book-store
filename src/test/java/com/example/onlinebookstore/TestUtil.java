@@ -1,5 +1,6 @@
 package com.example.onlinebookstore;
 
+import com.example.onlinebookstore.dto.NewUserDto;
 import com.example.onlinebookstore.entity.Book;
 import com.example.onlinebookstore.entity.User;
 import com.example.onlinebookstore.entity.UserBookRequest;
@@ -60,5 +61,12 @@ public class TestUtil {
                 .status(status)
                 .build();
         return userBookRequest;
+    }
+
+    protected NewUserDto getTestNewUserDto(final String name, final String password) {
+        return NewUserDto.builder()
+                .name(name)
+                .password(password)
+                .build();
     }
 }

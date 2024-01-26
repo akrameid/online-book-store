@@ -1,19 +1,18 @@
 package com.example.onlinebookstore.service;
 
 import com.example.onlinebookstore.TestUtil;
+import com.example.onlinebookstore.dto.NewUserDto;
 import com.example.onlinebookstore.entity.Book;
 import com.example.onlinebookstore.entity.User;
 import com.example.onlinebookstore.entity.UserBookRequest;
 import com.example.onlinebookstore.entity.UserBookRequestStatus;
-import com.example.onlinebookstore.exception.BookIdNotExistedException;
-import com.example.onlinebookstore.exception.BookNotAvailableException;
-import com.example.onlinebookstore.exception.BookRequestInProgressException;
-import com.example.onlinebookstore.exception.UserIdNotExistedException;
+import com.example.onlinebookstore.exception.*;
 import com.example.onlinebookstore.mapper.BookMapper;
 import com.example.onlinebookstore.repository.BookRepository;
 import com.example.onlinebookstore.repository.UserBookRequestRepository;
 import com.example.onlinebookstore.repository.UserBrowsingHistoryRepository;
 import com.example.onlinebookstore.repository.UserRepository;
+import com.example.onlinebookstore.util.UserUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.onlinebookstore.constant.Constants.USER_ADDED_SUCCESSFULLY;
 import static com.example.onlinebookstore.constant.Constants.USER_REQUEST_RECEIVED;
 import static com.example.onlinebookstore.constant.ErrorMessages.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,6 +42,8 @@ public class UserServiceTest extends TestUtil {
     private BookMapper bookMapper;
     @Mock
     private UserBookRequestRepository userBookRequestRepository;
+    @Mock
+    private UserUtil userUtil;
     @InjectMocks
     private UserService userService;
 
@@ -239,6 +241,29 @@ public class UserServiceTest extends TestUtil {
         final BookNotAvailableException exception = assertThrows(BookNotAvailableException.class,
                 () -> this.userService.requestBorrow(userId, bookId));
         assertEquals(String.format(BOOK_NOT_AVAILABLE, testBook.getName()), exception.getMessage());
+    }
+
+    @Test
+    public void registerUser() {
+        final String name = "n";
+        final String password = "p";
+        final NewUserDto testNewUserDto = getTestNewUserDto(name, password);
+        when(this.userRepository.findByNameAndPassword(name, password)).thenReturn(Optional.empty());
+        when(this.userUtil.createUser(name, password)).thenCallRealMethod();
+        final var result = this.userService.registerUser(testNewUserDto);
+        assertEquals(USER_ADDED_SUCCESSFULLY, result);
+        verify(this.userRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void registerUser_alreadyRegistered() {
+        final String name = "n";
+        final String password = "p";
+        final NewUserDto testNewUserDto = getTestNewUserDto(name, password);
+        when(this.userRepository.findByNameAndPassword(name, password)).thenReturn(Optional.of(getTestUser(name, password)));
+        final UserAlreadyRegisteredException exception = assertThrows(UserAlreadyRegisteredException.class,
+                () -> this.userService.registerUser(testNewUserDto));
+        assertEquals(String.format(USER_ALREADY_REGISTERED, name), exception.getMessage());
     }
 
 }

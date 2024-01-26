@@ -8,6 +8,6 @@ public class ErrorMessages {
     public static final String BOOK_ID_NOT_EXISTED = "Book ID %d is not existed";
     public static final String USER_ID_NOT_EXISTED = "User ID %d is not existed";
     public static final String BOOK_NAME_NOT_CONTAIN = "There is no book name contain \"%s\"";
-    public static final String USER_NAME_EXISTED = "User name \"%s\" is already existed";
+    public static final String USER_ALREADY_REGISTERED = "User name \"%s\" is already registered";
     public static final String BOOK_REQUEST_NOT_FOUND = "Book name \"%s\" is not requested or approved for this user";
 }
