@@ -61,13 +61,36 @@ public class AdminService {
         if (this.bookRepository.existsByNameAndIdNotIn(newBookName, List.of(bookId))) {
             throw new BookNameExistedInOtherBookException(book.getName());
         }
-        book.setName(newBookName);
-        book.setAuthorName(bookDto.getAuthorName());
-        book.setPrice(bookDto.getPrice());
-        book.setInStock(bookDto.getInStock());
-        book.setCategory(bookDto.getCategory());
+        updateBook(bookDto, book);
         this.bookRepository.save(book);
         return UPDATED_SUCCESSFULLY;
+    }
+
+    private void updateBook(final BookDto bookDto, final Book book) {
+        if (bookDto.getName() != null) {
+            book.setName(bookDto.getName());
+        }
+        if (bookDto.getAuthorName() != null) {
+            book.setAuthorName(bookDto.getAuthorName());
+        }
+        if (bookDto.getPrice() != null) {
+            book.setPrice(bookDto.getPrice());
+        }
+        if (bookDto.getInStock() != null) {
+            book.setInStock(bookDto.getInStock());
+        }
+        if (bookDto.getCategory() != null) {
+            book.setCategory(bookDto.getCategory());
+        }
+        if (bookDto.getNumberOfDaysForBorrow() != null) {
+            book.setNumberOfDaysForBorrow(bookDto.getNumberOfDaysForBorrow());
+        }
+        if (bookDto.getBorrowedCopiesCount() != null) {
+            book.setBorrowedCopiesCount(bookDto.getBorrowedCopiesCount());
+        }
+        if (bookDto.getStockLevel() != null) {
+            book.setStockLevel(bookDto.getStockLevel());
+        }
     }
 
     public List<UserDto> getAllUsers() {

@@ -19,6 +19,7 @@ public class BookDto {
     private String authorName;
     @NotNull
     private BigDecimal price;
+    @NotNull
     private Integer inStock;
     @JsonIgnore
     private LocalDateTime createdAt;
@@ -26,6 +27,7 @@ public class BookDto {
     private LocalDateTime updatedAt;
     @NotNull
     private String category;
+    @NotNull
     private Integer numberOfDaysForBorrow;
     private Integer stockLevel;
     @Builder.Default()

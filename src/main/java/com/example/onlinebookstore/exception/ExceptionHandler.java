@@ -1,13 +1,55 @@
 package com.example.onlinebookstore.exception;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex, final HttpHeaders headers, final HttpStatusCode status, final WebRequest request) {
+
+        final Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+
+            final String fieldName = ((FieldError) error).getField();
+            final String message = error.getDefaultMessage();
+            errors.put(fieldName, message);
+        });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(final HttpMessageNotReadableException ex, final HttpHeaders headers, final HttpStatusCode status, final WebRequest request) {
+        final Throwable mostSpecificCause = ex.getMostSpecificCause();
+        final Map<String, String> errors = new HashMap<>();
+        if (mostSpecificCause instanceof UnrecognizedPropertyException) {
+            final UnrecognizedPropertyException cause = (UnrecognizedPropertyException) mostSpecificCause;
+            final String propertyName = cause.getPropertyName();
+            final String message = "This property is not expected in the request body.";
+            errors.put(propertyName, message);
+            return new ResponseEntity(errors, headers, status);
+        } else {
+            final String exceptionName = "Error in the request";
+            final String message = mostSpecificCause.getMessage();
+            errors.put(exceptionName, message);
+            return new ResponseEntity(exceptionName, headers, status);
+        }
+    }
 
     @ResponseBody
     @org.springframework.web.bind.annotation.ExceptionHandler(BookNameExistedException.class)
