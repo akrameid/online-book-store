@@ -174,5 +174,11 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return ex.getMessage();
     }
 
+    @ResponseBody
+    @org.springframework.web.bind.annotation.ExceptionHandler(BookRequestNotPendingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String bookRequestNotPendingException(final BookRequestNotPendingException ex) {
+        return ex.getMessage();
+    }
 
 }

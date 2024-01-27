@@ -87,35 +87,35 @@ public class AdminServiceTest extends TestUtil {
     }
 
     @Test
-    public void update() {
+    public void updateBook() {
         final Long bookId = 3L;
         final BookDto bookDto = getTestBookDto(bookId);
         final Book testBook = getTestBook(bookId);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
         when(this.bookRepository.existsByNameAndIdNotIn(bookDto.getName(), List.of(bookId))).thenReturn(false);
-        this.adminService.update(bookId, bookDto);
+        this.adminService.updateBook(bookId, bookDto);
         verify(this.bookRepository, times(1)).save(testBook);
     }
 
     @Test
-    public void update_newNameAlreadyExisted() {
+    public void updateBook_newNameAlreadyExisted() {
         final Long bookId = 3L;
         final BookDto bookDto = getTestBookDto(bookId);
         final Book testBook = getTestBook(bookId);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
         when(this.bookRepository.existsByNameAndIdNotIn(bookDto.getName(), List.of(bookId))).thenReturn(true);
         final BookNameExistedInOtherBookException exception = assertThrows(BookNameExistedInOtherBookException.class,
-                () -> this.adminService.update(bookId, bookDto));
-        assertEquals(String.format(ErrorMessages.BOOK_NAME_EXISTED_IN_ANOTHER_BOOK, testBook.getName()), exception.getMessage());
+                () -> this.adminService.updateBook(bookId, bookDto));
+        assertEquals(String.format(ErrorMessages.BOOK_NAME_EXISTED_IN_ANOTHER_BOOK, bookDto.getName()), exception.getMessage());
     }
 
     @Test
-    public void update_bookNotFound() {
+    public void updateBook_bookNotFound() {
         final Long bookId = 3L;
         final BookDto bookDto = getTestBookDto(bookId);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.empty());
         final BookIdNotExistedException exception = assertThrows(BookIdNotExistedException.class,
-                () -> this.adminService.update(bookId, bookDto));
+                () -> this.adminService.updateBook(bookId, bookDto));
         assertEquals(String.format(ErrorMessages.BOOK_ID_NOT_EXISTED, bookId), exception.getMessage());
     }
 
@@ -195,6 +195,16 @@ public class AdminServiceTest extends TestUtil {
     }
 
     @Test
+    public void approve_notPending() {
+        final Long id = 2L;
+        final UserBookRequest testUserBookRequest = getTestUserBookRequest(id, UserBookRequestStatus.REJECTED);
+        when(this.userBookRequestRepository.findById(id)).thenReturn(Optional.of(testUserBookRequest));
+        final BookRequestNotPendingException exception = assertThrows(BookRequestNotPendingException.class,
+                () -> this.adminService.approve(id));
+        assertEquals(String.format(ErrorMessages.BOOK_REQUEST_NOT_PENDING, id), exception.getMessage());
+    }
+
+    @Test
     public void reject() {
         final Long id = 3L;
         final UserBookRequest testUserBookRequest = getTestUserBookRequest(id, UserBookRequestStatus.PENDING);
@@ -223,6 +233,16 @@ public class AdminServiceTest extends TestUtil {
         final BookRequestAlreadyRejectedException exception = assertThrows(BookRequestAlreadyRejectedException.class,
                 () -> this.adminService.reject(id));
         assertEquals(String.format(ErrorMessages.BOOK_REQUEST_ALREADY_REJECTED, id), exception.getMessage());
+    }
+
+    @Test
+    public void reject_notPending() {
+        final Long id = 8L;
+        final UserBookRequest testUserBookRequest = getTestUserBookRequest(id, UserBookRequestStatus.APPROVED);
+        when(this.userBookRequestRepository.findById(id)).thenReturn(Optional.of(testUserBookRequest));
+        final BookRequestNotPendingException exception = assertThrows(BookRequestNotPendingException.class,
+                () -> this.adminService.reject(id));
+        assertEquals(String.format(ErrorMessages.BOOK_REQUEST_NOT_PENDING, id), exception.getMessage());
     }
 
     @Test

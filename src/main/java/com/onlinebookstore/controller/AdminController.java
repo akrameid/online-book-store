@@ -36,8 +36,8 @@ public class AdminController {
     }
 
     @PutMapping("/books/{bookId}")
-    ResponseEntity<String> update(@PathVariable final Long bookId, @Valid @RequestBody final BookDto bookDto) {
-        return new ResponseEntity<>(this.adminService.update(bookId, bookDto), HttpStatus.OK);
+    ResponseEntity<String> updateBook(@PathVariable final Long bookId, @Valid @RequestBody final BookDto bookDto) {
+        return new ResponseEntity<>(this.adminService.updateBook(bookId, bookDto), HttpStatus.OK);
     }
 
 

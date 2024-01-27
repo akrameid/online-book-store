@@ -30,7 +30,6 @@ mvn spring-boot:run
 - There are admin APIs and user APIs
     - For admin APIs :
         - [GET] /admins/books : retrieve all available books in the system
-        - [GET] /admins/requests : get all requests to borrow books in the system
         - [GET] /admins/users : get all users in the system
         - [POST] /admins/books : create new book in the system with request body object, example :
             - {
@@ -52,7 +51,9 @@ mvn spring-boot:run
                   "inStock": 1,
                   "category": "Category 1"
                   }
-        - [PUT] /admins/requests/{requestId}/approve : approve book request to allow user to borrow the book
+      - [GET] /admins/requests : get all requests to borrow books in the system. This api will help to know the request
+        id to be used in approve/reject api
+      - [PUT] /admins/requests/{requestId}/approve : approve book request to allow user to borrow the book
         - [PUT] /admins/requests/{requestId}/reject : reject book request initiated from a user
         - [DELETE] /admins/books/{bookId} : delete the provided book id in the path url
     - For Users APIs:

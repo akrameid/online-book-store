@@ -54,11 +54,11 @@ public class AdminService {
         }
     }
 
-    public String update(final Long bookId, final BookDto bookDto) {
+    public String updateBook(final Long bookId, final BookDto bookDto) {
         final Book book = this.bookRepository.findById(bookId).orElseThrow(() -> new BookIdNotExistedException(bookId));
         final String newBookName = bookDto.getName();
         if (this.bookRepository.existsByNameAndIdNotIn(newBookName, List.of(bookId))) {
-            throw new BookNameExistedInOtherBookException(book.getName());
+            throw new BookNameExistedInOtherBookException(newBookName);
         }
         updateBook(bookDto, book);
         this.bookRepository.save(book);
@@ -119,11 +119,14 @@ public class AdminService {
         return allUserBookRequestDtos;
     }
 
-    public String approve(final Long id) {
-        final var request = this.userBookRequestRepository.findById(id).
-                orElseThrow(() -> new BookRequestNotCreatedException(id));
+    public String approve(final Long requestId) {
+        final var request = this.userBookRequestRepository.findById(requestId).
+                orElseThrow(() -> new BookRequestNotCreatedException(requestId));
         if (request.getStatus().equals(UserBookRequestStatus.APPROVED)) {
-            throw new BookRequestAlreadyApprovedException(id);
+            throw new BookRequestAlreadyApprovedException(requestId);
+        }
+        if (!request.getStatus().equals(UserBookRequestStatus.PENDING)) {
+            throw new BookRequestNotPendingException(requestId);
         }
         if (request.getBook().getInStock() < 1) {
             throw new BookNotAvailableException(request.getBook().getName());
@@ -138,12 +141,15 @@ public class AdminService {
         return String.format(USER_REQUEST_APPROVED, book.getName());
     }
 
-    public String reject(final Long id) {
+    public String reject(final Long requestId) {
         final var request =
-                this.userBookRequestRepository.findById(id).
-                        orElseThrow(() -> new BookRequestNotCreatedException(id));
+                this.userBookRequestRepository.findById(requestId).
+                        orElseThrow(() -> new BookRequestNotCreatedException(requestId));
         if (request.getStatus().equals(UserBookRequestStatus.REJECTED)) {
-            throw new BookRequestAlreadyRejectedException(id);
+            throw new BookRequestAlreadyRejectedException(requestId);
+        }
+        if (!request.getStatus().equals(UserBookRequestStatus.PENDING)) {
+            throw new BookRequestNotPendingException(requestId);
         }
         request.setStatus(UserBookRequestStatus.REJECTED);
         request.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
