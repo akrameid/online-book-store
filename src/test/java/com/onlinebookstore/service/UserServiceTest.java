@@ -150,7 +150,10 @@ public class UserServiceTest extends TestUtil {
 
     @Test
     public void getBookDetailsById() {
-        final Long bookId = 1L;
+        final Long bookId = 12L;
+        final Long userId = 31L;
+        final User testUser = getTestUser(userId);
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         final Book testBook = getTestBook(bookId);
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
 
@@ -158,16 +161,19 @@ public class UserServiceTest extends TestUtil {
                 invocationOnMock -> BookMapper.INSTANCE.mapToDto(testBook)
         );
 
-        final var result = this.userService.getBookDetailsById(bookId);
+        final var result = this.userService.getBookDetailsById(userId, bookId);
         assertEquals(result.getId(), testBook.getId());
     }
 
     @Test
     public void getBookDetailsById_bookNotFound() {
-        final Long bookId = 1L;
+        final Long bookId = 2L;
+        final Long userId = 3L;
+        final User testUser = getTestUser(userId);
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.empty());
         final BookIdNotExistedException exception = assertThrows(BookIdNotExistedException.class,
-                () -> this.userService.getBookDetailsById(bookId));
+                () -> this.userService.getBookDetailsById(userId, bookId));
         assertEquals(String.format(ErrorMessages.BOOK_ID_NOT_EXISTED, bookId), exception.getMessage());
     }
 

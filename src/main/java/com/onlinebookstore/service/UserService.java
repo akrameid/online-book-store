@@ -61,6 +61,7 @@ public class UserService {
         } else {
             books = this.bookRepository.findAll();
         }
+
         final Map<String, List<Book>> groupedBooksByCategory = books.stream()
                 .collect(Collectors.groupingBy(Book::getCategory));
 
@@ -73,16 +74,21 @@ public class UserService {
                     .build();
             bookWithCategoryDtos.add(bookWithCategoryDto);
         }
+        adjustBrowsingNumber(books, user);
         return bookWithCategoryDtos;
     }
 
     private void adjustBrowsingNumber(final List<Book> books, final User user) {
         for (final Book book : books) {
-            final UserBrowsingHistory userBrowsingHistory = getUserBrowsingHistory(user, book);
-            userBrowsingHistory.setBrowsingHistory(userBrowsingHistory.getBrowsingHistory() + 1);
-            this.userBrowsingHistoryRepository.save(userBrowsingHistory);
+            adjustBrowsingHistory(user, book);
         }
         this.bookRepository.saveAll(books);
+    }
+
+    private void adjustBrowsingHistory(final User user, final Book book) {
+        final UserBrowsingHistory userBrowsingHistory = getUserBrowsingHistory(user, book);
+        userBrowsingHistory.setBrowsingHistory(userBrowsingHistory.getBrowsingHistory() + 1);
+        this.userBrowsingHistoryRepository.save(userBrowsingHistory);
     }
 
     private UserBrowsingHistory getUserBrowsingHistory(final User user, final Book book) {
@@ -96,8 +102,10 @@ public class UserService {
         return userBrowsingHistory;
     }
 
-    public BookDto getBookDetailsById(final Long bookId) {
+    public BookDto getBookDetailsById(final Long userId, final Long bookId) {
+        final var user = this.userRepository.findById(userId).orElseThrow(() -> new UserIdNotExistedException(userId));
         final Book book = this.bookRepository.findById(bookId).orElseThrow(() -> new BookIdNotExistedException(bookId));
+        adjustBrowsingHistory(user, book);
         return this.bookMapper.mapToDto(book);
     }
 

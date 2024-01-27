@@ -37,9 +37,9 @@ public class UserController {
         return this.userService.getSuggestedBooks(userId);
     }
 
-    @GetMapping("/books/{bookId}")
-    public BookDto getBookDetailsById(@PathVariable("bookId") final Long bookId) {
-        return this.userService.getBookDetailsById(bookId);
+    @GetMapping("{userId}/books/{bookId}")
+    public BookDto getBookDetailsById(@PathVariable("userId") final Long userId, @PathVariable("bookId") final Long bookId) {
+        return this.userService.getBookDetailsById(userId, bookId);
     }
 
     @PostMapping("")
@@ -47,7 +47,7 @@ public class UserController {
         return new ResponseEntity<>(this.userService.registerUser(newUserDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("{userId}/books/{bookId}/borrow")
+    @PostMapping("{userId}/books/{bookId}/borrow")
     ResponseEntity<String> request(@PathVariable final Long userId, @PathVariable final Long bookId) {
         return new ResponseEntity<>(this.userService.requestBorrow(userId, bookId), HttpStatus.OK);
     }
