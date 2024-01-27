@@ -12,7 +12,6 @@ import com.example.onlinebookstore.repository.BookRepository;
 import com.example.onlinebookstore.repository.UserBookRequestRepository;
 import com.example.onlinebookstore.repository.UserBrowsingHistoryRepository;
 import com.example.onlinebookstore.repository.UserRepository;
-import com.example.onlinebookstore.util.UserUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -43,8 +42,6 @@ public class UserServiceTest extends TestUtil {
     private BookMapper bookMapper;
     @Mock
     private UserBookRequestRepository userBookRequestRepository;
-    @Mock
-    private UserUtil userUtil;
     @InjectMocks
     private UserService userService;
 
@@ -256,7 +253,6 @@ public class UserServiceTest extends TestUtil {
         final String password = "p1";
         final NewUserDto testNewUserDto = getTestNewUserDto(name, password);
         when(this.userRepository.findByNameAndPassword(name, password)).thenReturn(Optional.empty());
-        when(this.userUtil.createUser(name, password)).thenCallRealMethod();
         final var result = this.userService.registerUser(testNewUserDto);
         assertEquals(USER_ADDED_SUCCESSFULLY, result);
         verify(this.userRepository, times(1)).save(any());

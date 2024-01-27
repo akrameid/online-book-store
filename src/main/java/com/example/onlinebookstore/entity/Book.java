@@ -20,10 +20,8 @@ import java.sql.Timestamp;
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_sequence")
-    @SequenceGenerator(name = "book_sequence", sequenceName = "book_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @NotNull
     private String name;
     @NotNull
@@ -32,8 +30,10 @@ public class Book {
     private BigDecimal price;
     @NotNull
     private Integer inStock;
+    @Column(nullable = false, columnDefinition = "int default 0")
     @Builder.Default()
     private Integer borrowedCopiesCount = 0;
+    @Column(nullable = false, columnDefinition = "int default 1")
     @Builder.Default()
     private Integer stockLevel = 1;
     @CreatedDate

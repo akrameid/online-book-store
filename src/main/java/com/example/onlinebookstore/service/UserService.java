@@ -12,7 +12,6 @@ import com.example.onlinebookstore.repository.BookRepository;
 import com.example.onlinebookstore.repository.UserBookRequestRepository;
 import com.example.onlinebookstore.repository.UserBrowsingHistoryRepository;
 import com.example.onlinebookstore.repository.UserRepository;
-import com.example.onlinebookstore.util.UserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -35,7 +34,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserBookRequestRepository userBookRequestRepository;
     private final UserMapper userMapper;
-    private final UserUtil userUtil;
     private final UserBrowsingHistoryRepository userBrowsingHistoryRepository;
 
     public List<BookBriefDto> getAllBooks(final String category, final String name, final Long userId) {
@@ -128,7 +126,10 @@ public class UserService {
         if (existingUser.isPresent()) {
             throw new UserAlreadyRegisteredException(newUserDto.getName());
         } else {
-            this.userRepository.save(this.userUtil.createUser(newUserDto.getName(), newUserDto.getPassword()));
+            this.userRepository.save(User.builder()
+                    .name(newUserDto.getName())
+                    .password(newUserDto.getPassword())
+                    .build());
             return USER_ADDED_SUCCESSFULLY;
         }
     }
