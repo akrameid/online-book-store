@@ -13,7 +13,6 @@ import com.onlinebookstore.mapper.BookMapper;
 import com.onlinebookstore.mapper.UserMapper;
 import com.onlinebookstore.repository.BookRepository;
 import com.onlinebookstore.repository.UserBookRequestRepository;
-import com.onlinebookstore.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +37,7 @@ public class AdminServiceTest extends TestUtil {
     @Mock
     private BookMapper bookMapper;
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
     @Mock
     private UserMapper userMapper;
     @Mock
@@ -123,7 +122,7 @@ public class AdminServiceTest extends TestUtil {
     @Test
     public void getAllUsers() {
         final List<User> testUsers = getTestUsers();
-        when(this.userRepository.findAll()).thenReturn(testUsers);
+        when(this.userService.getAllUsers()).thenReturn(testUsers);
         when(this.userMapper.mapToDto(testUsers)).then(
                 invocationOnMock -> UserMapper.INSTANCE.mapToDto(testUsers));
         final var result = this.adminService.getAllUsers();

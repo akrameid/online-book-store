@@ -11,7 +11,6 @@ import com.onlinebookstore.mapper.BookMapper;
 import com.onlinebookstore.mapper.UserMapper;
 import com.onlinebookstore.repository.BookRepository;
 import com.onlinebookstore.repository.UserBookRequestRepository;
-import com.onlinebookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ import static com.onlinebookstore.constant.Constants.*;
 public class AdminService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final UserMapper userMapper;
     private final UserBookRequestRepository userBookRequestRepository;
 
@@ -94,7 +93,7 @@ public class AdminService {
     }
 
     public List<UserDto> getAllUsers() {
-        final List<User> users = this.userRepository.findAll();
+        final List<User> users = this.userService.getAllUsers();
         return this.userMapper.mapToDto(users);
     }
 

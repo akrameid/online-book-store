@@ -417,4 +417,12 @@ public class UserServiceTest extends TestUtil {
                 () -> this.userService.getAllBooksWithCategories(category, userId));
         assertEquals(String.format(ErrorMessages.USER_ID_NOT_EXISTED, userId), exception.getMessage());
     }
+
+    @Test
+    public void getAllUsers() {
+        final List<User> testUsers = getTestUsers();
+        when(this.userRepository.findAll()).thenReturn(testUsers);
+        final var result = this.userService.getAllUsers();
+        assertEquals(testUsers.size(), result.size());
+    }
 }

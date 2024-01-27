@@ -8,7 +8,6 @@ import com.onlinebookstore.dto.NewUserDto;
 import com.onlinebookstore.entity.*;
 import com.onlinebookstore.exception.*;
 import com.onlinebookstore.mapper.BookMapper;
-import com.onlinebookstore.mapper.UserMapper;
 import com.onlinebookstore.repository.BookRepository;
 import com.onlinebookstore.repository.UserBookRequestRepository;
 import com.onlinebookstore.repository.UserBrowsingHistoryRepository;
@@ -32,7 +31,6 @@ public class UserService {
     private final BookMapper bookMapper;
     private final UserRepository userRepository;
     private final UserBookRequestRepository userBookRequestRepository;
-    private final UserMapper userMapper;
     private final UserBrowsingHistoryRepository userBrowsingHistoryRepository;
 
     public List<BookBriefDto> getAllBooks(final String category, final String name, final Long userId) {
@@ -172,4 +170,7 @@ public class UserService {
         return this.bookMapper.mapToBriefDto(books);
     }
 
+    public List<User> getAllUsers() {
+        return this.userRepository.findAll();
+    }
 }
