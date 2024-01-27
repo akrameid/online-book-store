@@ -56,35 +56,35 @@ mvn spring-boot:run
         - [PUT] /admins/requests/{requestId}/reject : reject book request initiated from a user
         - [DELETE] /admins/books/{bookId} : delete the provided book id in the path url
     - For Users APIs:
-        - [GET] /user/{userId}/books : retrieve all books in the system
+        - [GET] /users/{userId}/books : retrieve all books in the system
             - userId : is to track the user browsing history to be used in the suggested books api
-        - [GET] /user/{userId}/books/categories : retrieve all books in the system grouped by categories
+        - [GET] /users/{userId}/books/categories : retrieve all books in the system grouped by categories
             - userId : is to track the user browsing history to be used in the suggested books api
-        - [GET] : /user/{userId}/books/suggest : retrieve all suggested books to the provided user id according to the
+        - [GET] : /users/{userId}/books/suggest : retrieve all suggested books to the provided user id according to the
           frequency of checking books
             - for example : if we have book retrieved by user apis 3 times and other book retrieved 2 times, then this
               api will return the book with 3 times first then the book with 2 times
-        - [GET] /user/{userId}/books/{bookId} : retrieve more book details about the provided book id for the provided
+        - [GET] /users/{userId}/books/{bookId} : retrieve more book details about the provided book id for the provided
           user id
         - [POST] /user : register new user to the system with request body object, example :
             - {
               "name":"test use36r",
               "password" :"test pw"
               }
-        - [POST] /user/{userId}/books/{bookId}/borrow : request to borrow the provided book id for the provided user id
-        - [PUT] /user/{userId}/books/{bookId}/return : return back the borrowed book id for the provided user id
+        - [POST] /users/{userId}/books/{bookId}/borrow : request to borrow the provided book id for the provided user id
+        - [PUT] /users/{userId}/books/{bookId}/return : return back the borrowed book id for the provided user id
     - There are initial data in the system : 2 books and 2 users
 
 ## Use cases
 
-- If you want to borrow a book, you can hit api "/user/1/books/1/borrow", it will generate a book request with
+- If you want to borrow a book, you can hit api "/users/1/books/1/borrow", it will generate a book request with
   id 1 (you can run api "/admins/requests" to know all current requests)
     - If there is no "in-stock" value for this book, user cannot request to borrow it
 - Then you can run the admin api for approving "/admins/requests/1/approve" or rejecting "
   /admins/requests/1/reject"
 - If you approve the request, the user can borrow the book then the "in-stock" property for this book will be
   decreased by one
-- When the user hit return api "/user/1/books/1/return", the book "in-stock" property will be increased by one
+- When the user hit return api "/users/1/books/1/return", the book "in-stock" property will be increased by one
 - Admin can add/update/delete books by apis
     - For delete, admin cannot delete book that is already borrowed. It needs to be returned to allow user to
       delete it
@@ -106,7 +106,8 @@ You can find database tables in file src/main/resources/schema.sql
     - If the user returned the book after this configured number of days, we will return different message to the user
       to inform him to pay more fees for delay
 - The suggested books api, depend on how many times the user hit any api that retrieve details about any book.
-    - Book details apis : "/user/{userId}/books" , "/user/{userId}/books/categories" , "/user/{userId}/books/{bookId} "
+    - Book details apis : "/users/{userId}/books" , "/users/{userId}/books/categories" , "
+      /users/{userId}/books/{bookId} "
     - When book retrieved, I increment the browsing history field in table "user_browsing_history" to track how many
       times a book is reviewed by a user
     - Then we return suggested books ordered by browsing history descending
