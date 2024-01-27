@@ -74,7 +74,7 @@ mvn spring-boot:run
               }
         - [POST] /users/{userId}/books/{bookId}/borrow : request to borrow the provided book id for the provided user id
         - [PUT] /users/{userId}/books/{bookId}/return : return back the borrowed book id for the provided user id
-    - There are initial data in the system : 2 books and 2 users
+    - Attached in the repo postman collection "Online Bookstore.postman_collection.json" contain all needed apis
 
 ## Use cases
 
@@ -92,7 +92,8 @@ mvn spring-boot:run
 
 ## Database Structure
 
-You can find database tables in file src/main/resources/schema.sql
+- You can find database tables in file src/main/resources/schema.sql
+- There are initial data in the system : 2 books and 2 users
 
 ## Unit Tests
 
