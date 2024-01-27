@@ -2,6 +2,7 @@ package com.example.onlinebookstore.service;
 
 import com.example.onlinebookstore.dto.BookBriefDto;
 import com.example.onlinebookstore.dto.BookDto;
+import com.example.onlinebookstore.dto.BookWithCategoryDto;
 import com.example.onlinebookstore.dto.NewUserDto;
 import com.example.onlinebookstore.entity.*;
 import com.example.onlinebookstore.exception.*;
@@ -19,7 +20,10 @@ import org.springframework.util.StringUtils;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.example.onlinebookstore.constant.Constants.*;
 
@@ -35,7 +39,7 @@ public class UserService {
     private final UserBrowsingHistoryRepository userBrowsingHistoryRepository;
 
     public List<BookBriefDto> getAllBooks(final String category, final String name, final Long userId) {
-        final var user = this.userRepository.findById(userId).orElseThrow();//TODO: add exception
+        final var user = this.userRepository.findById(userId).orElseThrow(() -> new UserIdNotExistedException(userId));
         final List<Book> books;
         if (StringUtils.hasText(category) && StringUtils.hasText(name)) {
             books = this.bookRepository.findByNameContainsAndCategory(name, category);
@@ -48,6 +52,31 @@ public class UserService {
         }
         adjustBrowsingNumber(books, user);
         return this.bookMapper.mapToBriefDto(books);
+    }
+
+
+    public List<BookWithCategoryDto> getAllBooksWithCategories(final String category, final Long userId) {
+        final List<BookWithCategoryDto> bookWithCategoryDtos = new ArrayList<>();
+        final var user = this.userRepository.findById(userId).orElseThrow(() -> new UserIdNotExistedException(userId));
+        final List<Book> books;
+        if (StringUtils.hasText(category)) {
+            books = this.bookRepository.findByCategory(category);
+        } else {
+            books = this.bookRepository.findAll();
+        }
+        final Map<String, List<Book>> groupedBooksByCategory = books.stream()
+                .collect(Collectors.groupingBy(Book::getCategory));
+
+        for (final Map.Entry<String, List<Book>> entry : groupedBooksByCategory.entrySet()) {
+            final String currentCategory = entry.getKey();
+            final var currentCategoryBooks = this.bookMapper.mapToBriefDto(entry.getValue());
+            final BookWithCategoryDto bookWithCategoryDto = BookWithCategoryDto.builder()
+                    .category(currentCategory)
+                    .books(currentCategoryBooks)
+                    .build();
+            bookWithCategoryDtos.add(bookWithCategoryDto);
+        }
+        return bookWithCategoryDtos;
     }
 
     private void adjustBrowsingNumber(final List<Book> books, final User user) {
@@ -134,4 +163,5 @@ public class UserService {
         final List<Book> books = this.bookRepository.getSuggestedBooks(userId);
         return this.bookMapper.mapToBriefDto(books);
     }
+
 }

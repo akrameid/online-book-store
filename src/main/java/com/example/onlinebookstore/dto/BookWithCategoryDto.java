@@ -2,13 +2,14 @@ package com.example.onlinebookstore.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class BookBriefDto {
-    private Long id;
-    private String name;
-    private String authorName;
+public class BookWithCategoryDto {
+    private String category;
+    private List<BookBriefDto> books;
 }

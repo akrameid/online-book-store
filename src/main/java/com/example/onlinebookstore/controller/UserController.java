@@ -2,6 +2,7 @@ package com.example.onlinebookstore.controller;
 
 import com.example.onlinebookstore.dto.BookBriefDto;
 import com.example.onlinebookstore.dto.BookDto;
+import com.example.onlinebookstore.dto.BookWithCategoryDto;
 import com.example.onlinebookstore.dto.NewUserDto;
 import com.example.onlinebookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,12 @@ public class UserController {
                                           @RequestParam(name = "name", required = false) final String name,
                                           @PathVariable("userId") final Long userId) {
         return this.userService.getAllBooks(category, name, userId);
+    }
+
+    @GetMapping("{userId}/books/categories")
+    public List<BookWithCategoryDto> getAllBooksWithCategories(@RequestParam(name = "category", required = false) final String category,
+                                                               @PathVariable("userId") final Long userId) {
+        return this.userService.getAllBooksWithCategories(category, userId);
     }
 
     @GetMapping("{id}/books/suggest")

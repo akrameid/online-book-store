@@ -54,7 +54,7 @@ public class UserServiceTest extends TestUtil {
         final String category = "";
         final Long userId = 1L;
         final String name = "";
-        when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(getTestUser(userId)));
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(getTestUser(userId)));
         final List<Book> books = getTestBooks();
         when(this.bookRepository.findAll()).thenReturn(books);
 
@@ -72,7 +72,7 @@ public class UserServiceTest extends TestUtil {
         final String category = "c";
         final Long userId = 1L;
         final String name = "";
-        when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(getTestUser(userId)));
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(getTestUser(userId)));
         final List<Book> books = getTestBooks();
         when(this.bookRepository.findByCategory(category)).thenReturn(books);
 
@@ -90,7 +90,7 @@ public class UserServiceTest extends TestUtil {
         final String category = "";
         final Long userId = 1L;
         final String name = "n";
-        when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(getTestUser(userId)));
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(getTestUser(userId)));
         final List<Book> books = getTestBooks();
         when(this.bookRepository.findByNameContains(name)).thenReturn(books);
 
@@ -108,7 +108,7 @@ public class UserServiceTest extends TestUtil {
         final String category = "c";
         final Long userId = 1L;
         final String name = "n";
-        when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(getTestUser(userId)));
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(getTestUser(userId)));
         final List<Book> books = getTestBooks();
         when(this.bookRepository.findByNameContainsAndCategory(name, category)).thenReturn(books);
 
@@ -126,7 +126,7 @@ public class UserServiceTest extends TestUtil {
         final String category = "";
         final Long userId = 1L;
         final String name = "";
-        when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(getTestUser(userId)));
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(getTestUser(userId)));
         final List<Book> books = getTestBooks();
         when(this.bookRepository.findAll()).thenReturn(books);
 
@@ -140,17 +140,27 @@ public class UserServiceTest extends TestUtil {
     }
 
     @Test
+    public void getAllBooks_userIdNotFound() {
+        final String category = "";
+        final Long userId = 1L;
+        final String name = "";
+        when(this.userRepository.findById(userId)).thenReturn(Optional.empty());
+        final UserIdNotExistedException exception = assertThrows(UserIdNotExistedException.class,
+                () -> this.userService.getAllBooks(category, name, userId));
+        assertEquals(String.format(USER_ID_NOT_EXISTED, userId), exception.getMessage());
+    }
+
+    @Test
     public void getBookDetailsById() {
         final Long bookId = 1L;
         final Book testBook = getTestBook(bookId);
-        when(this.bookRepository.findById(bookId)).thenReturn(Optional.ofNullable(testBook));
+        when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
 
         when(this.bookMapper.mapToDto(testBook)).then(
                 invocationOnMock -> BookMapper.INSTANCE.mapToDto(testBook)
         );
 
         final var result = this.userService.getBookDetailsById(bookId);
-        assert testBook != null;
         assertEquals(result.getId(), testBook.getId());
     }
 
@@ -171,7 +181,7 @@ public class UserServiceTest extends TestUtil {
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.empty());
         final User testUser = getTestUser(userId);
-        when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(testUser));
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
         final ArgumentCaptor<UserBookRequest> captor = ArgumentCaptor.forClass(UserBookRequest.class);
         final var result = this.userService.requestBorrow(userId, bookId);
@@ -232,7 +242,7 @@ public class UserServiceTest extends TestUtil {
         when(this.bookRepository.findById(bookId)).thenReturn(Optional.of(testBook));
         when(this.userBookRequestRepository.findByBook_IdAndReferredUser_IdAndStatus(bookId, userId, UserBookRequestStatus.PENDING)).thenReturn(Optional.empty());
         final User testUser = getTestUser(userId);
-        when(this.userRepository.findById(userId)).thenReturn(Optional.ofNullable(testUser));
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
 
         final BookNotAvailableException exception = assertThrows(BookNotAvailableException.class,
@@ -356,5 +366,52 @@ public class UserServiceTest extends TestUtil {
         );
         final var result = this.userService.getSuggestedBooks(userId);
         assertEquals(testBooks.size(), result.size());
+    }
+
+    @Test
+    public void getAllBooksWithCategories() {
+        final String category = "";
+        final Long userId = 1L;
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(getTestUser(userId)));
+        final List<Book> books = getTestBooks();
+        when(this.bookRepository.findAll()).thenReturn(books);
+        when(this.bookMapper.mapToBriefDto(anyList())).then(
+                invocationOnMock ->
+                {
+                    final List<Book> argument = invocationOnMock.getArgument(0);
+                    return BookMapper.INSTANCE.mapToBriefDto(argument);
+                });
+
+        final var result = this.userService.getAllBooksWithCategories(category, userId);
+        assertEquals(result.size(), books.size());
+    }
+
+    @Test
+    public void getAllBooksWithCategories_filteredCategory() {
+        final String category = "c";
+        final Long userId = 1L;
+        when(this.userRepository.findById(userId)).thenReturn(Optional.of(getTestUser(userId)));
+        final List<Book> books = getTestBooks();
+        when(this.bookRepository.findByCategory(category)).thenReturn(books);
+        when(this.bookMapper.mapToBriefDto(anyList())).then(
+                invocationOnMock ->
+                {
+                    final List<Book> argument = invocationOnMock.getArgument(0);
+                    return BookMapper.INSTANCE.mapToBriefDto(argument);
+                });
+
+        final var result = this.userService.getAllBooksWithCategories(category, userId);
+        assertEquals(result.size(), books.size());
+    }
+
+    @Test
+    public void getAllBooksWithCategories_userNotFound() {
+        final String category = "";
+        final Long userId = 1L;
+        when(this.userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        final UserIdNotExistedException exception = assertThrows(UserIdNotExistedException.class,
+                () -> this.userService.getAllBooksWithCategories(category, userId));
+        assertEquals(String.format(USER_ID_NOT_EXISTED, userId), exception.getMessage());
     }
 }
