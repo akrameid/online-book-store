@@ -4,6 +4,7 @@ import com.example.onlinebookstore.dto.BookDto;
 import com.example.onlinebookstore.dto.UserBookRequestDto;
 import com.example.onlinebookstore.dto.UserDto;
 import com.example.onlinebookstore.service.AdminService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/admin")
 @RequiredArgsConstructor
+@Tag(name = "Admin APIs", description = "APIs for managing books by admins")
 public class AdminController {
     private final AdminService adminService;
 
