@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/admin")
+@RequestMapping(value = "/admins")
 @RequiredArgsConstructor
 @Tag(name = "Admin APIs", description = "APIs for managing books by admins")
 public class AdminController {
@@ -51,12 +51,12 @@ public class AdminController {
         return this.adminService.getAllUserBookRequests();
     }
 
-    @PutMapping("/requests/approve/{id}")
+    @PutMapping("/requests/{id}/approve")
     ResponseEntity<String> approve(@PathVariable final Long id) {
         return new ResponseEntity<>(this.adminService.approve(id), HttpStatus.OK);
     }
 
-    @PutMapping("/requests/reject/{id}")
+    @PutMapping("/requests/{id}/reject")
     ResponseEntity<String> reject(@PathVariable final Long id) {
         return new ResponseEntity<>(this.adminService.reject(id), HttpStatus.OK);
     }

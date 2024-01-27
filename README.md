@@ -29,10 +29,10 @@ mvn spring-boot:run
 
 - There are admin APIs and user APIs
     - For admin APIs :
-        - [GET] /admin/books : retrieve all available books in the system
-        - [GET] /admin/requests : get all requests to borrow books in the system
-        - [GET] /admin/users : get all users in the system
-        - [POST] /admin/books : create new book in the system with request body object, example :
+        - [GET] /admins/books : retrieve all available books in the system
+        - [GET] /admins/requests : get all requests to borrow books in the system
+        - [GET] /admins/users : get all users in the system
+        - [POST] /admins/books : create new book in the system with request body object, example :
             - {
               "name":"test book3",
               "authorName" :"test authorName",
@@ -41,7 +41,7 @@ mvn spring-boot:run
               "inStock" : 1,
               "category": "Category 1"
               }
-        - [PUT] /admin/books/{bookId} : update the book details
+        - [PUT] /admins/books/{bookId} : update the book details
             - bookId : path parameter with value book id
             - request body object contain all new book details to be updated, example :
                 - {
@@ -52,9 +52,9 @@ mvn spring-boot:run
                   "inStock": 1,
                   "category": "Category 1"
                   }
-        - [PUT] /admin/requests/approve/{requestId} : approve book request to allow user to borrow the book
-        - [PUT] /admin/requests/reject/{requestId} : reject book request initiated from a user
-        - [DELETE] /admin/books/{bookId} : delete the provided book id in the path url
+        - [PUT] /admins/requests/{requestId}/approve : approve book request to allow user to borrow the book
+        - [PUT] /admins/requests/{requestId}/reject : reject book request initiated from a user
+        - [DELETE] /admins/books/{bookId} : delete the provided book id in the path url
     - For Users APIs:
         - [GET] /user/{userId}/books : retrieve all books in the system
             - userId : is to track the user browsing history to be used in the suggested books api
@@ -78,10 +78,10 @@ mvn spring-boot:run
 ## Use cases
 
 - If you want to borrow a book, you can hit api "/user/1/books/1/borrow", it will generate a book request with
-  id 1 (you can run api "/admin/requests" to know all current requests)
+  id 1 (you can run api "/admins/requests" to know all current requests)
     - If there is no "in-stock" value for this book, user cannot request to borrow it
-- Then you can run the admin api for approving "/admin/requests/approve/1" or rejecting "
-  /admin/requests/reject/1"
+- Then you can run the admin api for approving "/admins/requests/1/approve" or rejecting "
+  /admins/requests/1/reject"
 - If you approve the request, the user can borrow the book then the "in-stock" property for this book will be
   decreased by one
 - When the user hit return api "/user/1/books/1/return", the book "in-stock" property will be increased by one
