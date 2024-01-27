@@ -93,6 +93,11 @@ mvn spring-boot:run
 
 You can find database tables in file src/main/resources/schema.sql
 
+## Unit Tests
+
+- I just added unit test for service classes only as they only contain the main logic.
+- For Controller classes, there is no extra logic to be tested. So I neglect to add tests for controller methods
+
 ## Assumptions
 
 - Stock-level in the book, is configured as normal number with no business cases or validations as it was not clear for
